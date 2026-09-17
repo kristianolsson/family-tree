@@ -1,0 +1,26 @@
+[
+  {
+    "id": "F0001",
+    "partners": ["P0001", "P0002"],
+    "children": ["P0003", "P0005"],
+    "marriage": { "date": "1924-06-14", "place": "Åby, Sweden", "type": "gift" },
+    "sources": [],
+    "notes": ""
+  },
+  {
+    "id": "F0002",
+    "partners": ["P0003", "P0004"],
+    "children": ["P0006"],
+    "marriage": { "date": "1949-08-20", "place": "Uppsala, Sweden", "type": "gift" },
+    "sources": [],
+    "notes": ""
+  },
+  {
+    "id": "F0003",
+    "partners": ["P0006", "P0007"],
+    "children": ["P0008"],
+    "marriage": { "date": "1974-05-11", "place": "Stockholm, Sweden", "type": "gift" },
+    "sources": [],
+    "notes": ""
+  }
+]
