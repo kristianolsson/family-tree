@@ -10,7 +10,7 @@
     "test": "vitest run",
     "setup": "node scripts/setup.mjs",
     "sync": "node scripts/sync-template.mjs",
-    "deploy:demo": "BASE_PATH=/family-tree vite build && gh-pages -d build",
+    "deploy:demo": "BASE_PATH=/family-tree vite build && gh-pages -d build --dotfiles",
     "prepare": "svelte-kit sync || echo ''"
   },
   "dependencies": {

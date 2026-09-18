@@ -44,7 +44,10 @@ Outputs a static site to `build/`.
    source document or pasted text into the dataset, including dedupe
    against what's already there. The first person you add this way also
    gets set as `DEFAULT_PERSON_ID` in `src/lib/config.js` automatically
-   — that's who the site shows at `/`.
+   — that's who the site shows at `/`. If you hand-edit instead of using
+   the skill, that automation doesn't run — set `DEFAULT_PERSON_ID` in
+   `src/lib/config.js` to your new person's id yourself, or `/` won't
+   have anyone to redirect to.
 
 3. Deploy — see "Deploy" below.
 
@@ -59,9 +62,13 @@ The `build/` output is plain static files — any static host works:
 
 - **GitHub Pages** — build locally, then either push `build/` to a
   `gh-pages` branch by hand or with the `gh-pages` npm package
-  (`npx gh-pages -d build`), and point Settings → Pages → "Deploy from a
-  branch" at it. (This repo uses its own `npm run deploy:demo` for its
-  live demo — feel free to ignore or delete it in your own copy.)
+  (`npx gh-pages -d build --dotfiles`), and point Settings → Pages →
+  "Deploy from a branch" at it. The `--dotfiles` flag is required — it's
+  what publishes `build/.nojekyll`, which stops GitHub Pages' default
+  Jekyll processing from silently stripping the `_app/` directory
+  SvelteKit's build output depends on. (This repo uses its own
+  `npm run deploy:demo` for its live demo — feel free to ignore or delete
+  it in your own copy.)
 - **Cloudflare Pages** — connect your repo, build command `npm run build`,
   output directory `build`.
 - Anywhere else that serves static files (Netlify, S3, plain FTP) — build
