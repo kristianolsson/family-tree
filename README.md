@@ -10,8 +10,7 @@ This repo is a **GitHub template** — click "Use this template" (or clone
 it) to start your own family tree site with your own data.
 
 **Live demo:** a small fictional sample family, not real data — see this
-repo's GitHub Pages deployment (Settings → Pages, or the badge on the
-repo's homepage once `.github/workflows/deploy-demo.yml` has run once).
+repo's GitHub Pages deployment (Settings → Pages).
 
 ## Develop
 
@@ -30,15 +29,24 @@ Outputs a static site to `build/`.
 
 ## Getting started with your own data
 
-    npm run setup
+1. Run the setup script:
 
-This wires up a git remote (`upstream`) back to this template — so you
-can pull in future improvements, see "Staying in sync" below — and offers
-to replace the bundled sample family with a blank dataset. From there,
-either hand-edit `static/data/*.json` (documented in full in
-`docs/schema.md`) or, if you're using Claude Code, run the `add-source`
-skill (`.claude/skills/add-source/SKILL.md`) to transcribe a new source
-document into the dataset, including dedupe against what's already there.
+       npm run setup
+
+   This wires up a git remote (`upstream`) back to this template — see
+   "Staying in sync" below — and asks whether to replace the bundled
+   sample family with a blank dataset.
+
+2. If you blanked the data, add yourself or your tree's central person:
+   hand-edit `static/data/*.json` (documented in full in
+   `docs/schema.md`), or, if you're using Claude Code, run the
+   `add-data` skill (`.claude/skills/add-data/SKILL.md`) to transcribe a
+   source document or pasted text into the dataset, including dedupe
+   against what's already there. The first person you add this way also
+   gets set as `DEFAULT_PERSON_ID` in `src/lib/config.js` automatically
+   — that's who the site shows at `/`.
+
+3. Deploy — see "Deploy" below.
 
 After any dataset edit:
 
@@ -49,8 +57,11 @@ After any dataset edit:
 
 The `build/` output is plain static files — any static host works:
 
-- **GitHub Pages** — see `.github/workflows/deploy-demo.yml` for a
-  working example (it's what deploys this repo's own live demo).
+- **GitHub Pages** — build locally, then either push `build/` to a
+  `gh-pages` branch by hand or with the `gh-pages` npm package
+  (`npx gh-pages -d build`), and point Settings → Pages → "Deploy from a
+  branch" at it. (This repo uses its own `npm run deploy:demo` for its
+  live demo — feel free to ignore or delete it in your own copy.)
 - **Cloudflare Pages** — connect your repo, build command `npm run build`,
   output directory `build`.
 - Anywhere else that serves static files (Netlify, S3, plain FTP) — build
@@ -58,10 +69,13 @@ The `build/` output is plain static files — any static host works:
 
 ## Staying in sync with this template
 
-See `CLAUDE.md`'s "Syncing with the family-tree template" section for the
-exact commands — in short, `git fetch upstream && git merge upstream/main`
-whenever you want to pull in template improvements, keeping your own
-`static/data/` and `src/lib/config.js` values.
+    npm run sync
+
+Fetches and merges `upstream/main`, resolving conflicts automatically
+(your data and `config.js` always win, template docs/skill updates always
+win), then runs tests/build before committing. See CLAUDE.md's "Syncing
+with the family-tree template" section for exactly what it does and how
+to resolve anything it can't.
 
 ## Architecture
 

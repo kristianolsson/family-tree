@@ -37,26 +37,40 @@ below means whatever you've put in `static/data/` in your own copy.
   referential integrity (orphan references, duplicate family records,
   missing image files, unflagged birth-date collisions) — run it after
   touching any dataset file.
-- To add a brand-new source document — transcription, dedupe against
-  existing people/families, ID assignment, review-queue flagging — use the
-  `add-source` skill (`.claude/skills/add-source/SKILL.md`).
+- To add new data — one or more people/families, a source document, or
+  both — transcription, dedupe against existing people/families, ID
+  assignment, review-queue flagging, and (on first use) setting
+  `DEFAULT_PERSON_ID` — use the `add-data` skill
+  (`.claude/skills/add-data/SKILL.md`).
 
 ## Syncing with the family-tree template
 
 If your copy of this repo started from this template (via "Use this
-template" or a clone), you can pull in future generic improvements (bug
-fixes, features, doc updates) the same way anyone else would — a plain
-git upstream remote, no custom tooling:
+template" or a clone), pull in future generic improvements (bug fixes,
+features, doc updates) with:
+
+    npm run sync
+
+This wraps the plain-git sync mechanism below into one command: it wires
+up the `upstream` remote if needed, fetches, merges `upstream/main`,
+auto-resolves conflicts per the rule below, runs `npm test -- --run` and
+`npm run build`, and — only if both pass — commits the merge. It never
+pushes; review with `git log`/`git diff` and `git push` yourself when
+ready. If it stops partway (a conflict outside the rule below, or a
+failing test/build), it tells you exactly what to do: resolve by hand and
+re-run `npm run sync`, or `git merge --abort` to cancel.
+
+**What it's doing, in plain git** (useful if you ever need to do this by
+hand, or want to understand what the script did):
 
     git remote add upstream https://github.com/kristianolsson/family-tree.git
     git fetch upstream
     git merge upstream/main
 
-`npm run setup` adds the `upstream` remote for you if it isn't already
-there. Resolve any conflicts per-path, mechanically:
+Conflicts resolve per-path, mechanically:
 
 - Docs and skill files (`README.md`, `CLAUDE.md`, `docs/ARCHITECTURE.md`,
-  `docs/schema.md`, `.claude/skills/add-source/SKILL.md`) — take **theirs**
+  `docs/schema.md`, `.claude/skills/add-data/SKILL.md`) — take **theirs**
   (the template's version wins outright — that's also how future updates
   to this very section arrive):
 
@@ -80,6 +94,6 @@ Then verify and finish the merge:
 
 **The standing rule:** make every non-data change (bug fix, feature, doc
 improvement, skill update) as a commit in the `family-tree` template repo
-first, then pull it into your own copy via the steps above — never edit it
+first, then pull it into your own copy via `npm run sync` — never edit it
 directly in your own repo and never back-port it by hand. `static/data/*`
 and `src/lib/config.js` are the only files meant to permanently diverge.
