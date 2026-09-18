@@ -1,20 +1,23 @@
 ---
-name: add-source
-description: Use when the site owner wants to add a new genealogy source document (a photo/scan of a chart, list, or note, and/or a text description) into the family tree dataset — transcribes it, dedupes against existing people/families using the dataset's existing merge rules, assigns new IDs, and flags anything uncertain in review_queue.json.
+name: add-data
+description: Use when the site owner wants to add new genealogy data to the family tree dataset — one or more people, families, and/or a source document (a photo/scan of a chart, list, or note, and/or a text description) — transcribes it, dedupes against existing people/families using the dataset's existing merge rules, assigns new IDs, and flags anything uncertain in review_queue.json. On first use (a blank dataset), also sets DEFAULT_PERSON_ID.
 ---
 
-# Adding a New Source to the Family Tree Dataset
+# Adding Data to the Family Tree Dataset
 
 ## Overview
 
-The site owner periodically finds or is given a new genealogy document —
-a printed chart, a handwritten note, a narrative list — and wants it
+The site owner periodically has new genealogy data to add — a printed
+chart, a handwritten note, a narrative list, a person or two mentioned in
+conversation, one document or several in the same run — and wants it
 folded into the dataset the `family-tree` site reads. This skill turns
-one new source document into: a new `sources.json` entry, new or updated
-`people.json`/`families.json` records, and any `review_queue.json` items
-the merge raises for the owner's judgment.
+that into: new or updated `people.json`/`families.json` records, a new
+`sources.json` entry for each document that has an actual image behind
+it, and any `review_queue.json` items the merge raises for the owner's
+judgment. On a completely blank dataset, it also sets the site's default
+starting person (Step 6).
 
-**Announce at start:** "Using the add-source skill to add this to the
+**Announce at start:** "Using the add-data skill to add this to the
 family tree dataset."
 
 ## Before you start
@@ -199,7 +202,24 @@ anything it flags — or, for a genuine new dedupe question, add the
 `review_queue.json` entry Step 3 describes — before reporting done.
 Don't report done with a failing validation run, test, or build.
 
-## Step 6: Report back
+## Step 6: Set DEFAULT_PERSON_ID on first use
+
+Read `src/lib/config.js`. If `DEFAULT_PERSON_ID` already holds a
+non-empty id, skip this step entirely — it only ever applies once, right
+after a blank-dataset setup.
+
+If it's empty (`''`), this dataset has no default person yet and the
+site's `/` route has nothing to redirect to. Ask the site owner which
+person should be the default, starting view — if this run added exactly
+one new person, offer that one by name and id as the obvious default.
+Once they confirm an id, edit `src/lib/config.js`:
+
+    export const DEFAULT_PERSON_ID = '<chosen id>';
+
+Leave this as part of the same uncommitted working-tree change as the
+rest of the run — don't commit it separately.
+
+## Step 7: Report back
 
 Summarize: the new source id, how many new person/family records were
 created vs. merged into existing ones, and anything added to
