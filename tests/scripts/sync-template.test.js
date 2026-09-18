@@ -21,6 +21,12 @@ describe('classifyConflict', () => {
     expect(classifyConflict('src/lib/components/TreeView.svelte')).toBe('unknown');
     expect(classifyConflict('package.json')).toBe('unknown');
   });
+
+  it('does not match near-miss filenames like config.json or config.js.bak', () => {
+    expect(classifyConflict('src/lib/config.json')).toBe('unknown');
+    expect(classifyConflict('src/lib/config.js.bak')).toBe('unknown');
+    expect(classifyConflict('src/lib/config.js.orig')).toBe('unknown');
+  });
 });
 
 describe('shouldSync', () => {

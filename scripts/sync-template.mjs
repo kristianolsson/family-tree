@@ -10,11 +10,13 @@ const THEIRS_PATHS = [
   '.claude/skills/add-data/SKILL.md'
 ];
 
-const OURS_PATHS = ['src/lib/config.js', 'static/data/'];
+const OURS_EXACT = ['src/lib/config.js'];
+const OURS_PREFIX = ['static/data/'];
 
 export function classifyConflict(path) {
   if (THEIRS_PATHS.includes(path)) return 'theirs';
-  if (OURS_PATHS.some((p) => path === p || path.startsWith(p))) return 'ours';
+  if (OURS_EXACT.includes(path)) return 'ours';
+  if (OURS_PREFIX.some((p) => path.startsWith(p))) return 'ours';
   return 'unknown';
 }
 
