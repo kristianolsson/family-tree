@@ -1,0 +1,101 @@
+[
+  {
+    "id": "P0001",
+    "names": [{ "value": "Elin Bergqvist", "type": "birth", "source_id": null }],
+    "sex": "F",
+    "birth": { "date": "1901-03-04", "year": null, "place": "Åby, Sweden", "source_id": null },
+    "death": { "date": "1978-11-02", "year": null, "place": "Åby, Sweden", "age_at_death": 77, "source_id": null },
+    "occupation": ["Lantbrukare (farmer)"],
+    "notes": "",
+    "sources": [],
+    "conflicts": [],
+    "status": "confirmed"
+  },
+  {
+    "id": "P0002",
+    "names": [{ "value": "Nils Bergqvist", "type": "birth", "source_id": null }],
+    "sex": "M",
+    "birth": { "date": "1898-07-19", "year": null, "place": "Väster, Sweden", "source_id": null },
+    "death": { "date": "1965-02-14", "year": null, "place": "Väster, Sweden", "age_at_death": 66, "source_id": null },
+    "occupation": ["Snickare (carpenter)"],
+    "notes": "",
+    "sources": [],
+    "conflicts": [],
+    "status": "confirmed"
+  },
+  {
+    "id": "P0003",
+    "names": [{ "value": "Karin Bergqvist", "type": "birth", "source_id": null }],
+    "sex": "F",
+    "birth": { "date": "1925-05-30", "year": null, "place": "Åby, Sweden", "source_id": null },
+    "death": { "date": null, "year": null, "place": null, "age_at_death": null, "source_id": null },
+    "occupation": ["Lärare (teacher)"],
+    "notes": "Moved to Uppsala in 1948 to study.",
+    "sources": [],
+    "conflicts": [],
+    "status": "confirmed"
+  },
+  {
+    "id": "P0004",
+    "names": [{ "value": "Gustav Lindqvist", "type": "birth", "source_id": null }],
+    "sex": "M",
+    "birth": { "date": "1922-09-10", "year": null, "place": "Uppsala, Sweden", "source_id": null },
+    "death": { "date": "2001-03-22", "year": null, "place": "Uppsala, Sweden", "age_at_death": 78, "source_id": null },
+    "occupation": ["Ingenjör (engineer)"],
+    "notes": "",
+    "sources": [],
+    "conflicts": [],
+    "status": "confirmed"
+  },
+  {
+    "id": "P0005",
+    "names": [{ "value": "Otto Bergqvist", "type": "birth", "source_id": null }],
+    "sex": "M",
+    "birth": { "date": "1928-01-15", "year": null, "place": "Åby, Sweden", "source_id": null },
+    "death": { "date": null, "year": null, "place": null, "age_at_death": null, "source_id": null },
+    "occupation": [],
+    "notes": "Emigrated to Canada in 1950.",
+    "sources": [],
+    "conflicts": [],
+    "status": "confirmed"
+  },
+  {
+    "id": "P0006",
+    "names": [{ "value": "Maja Lindqvist", "type": "birth", "source_id": null }],
+    "sex": "F",
+    "birth": { "date": "1950-06-01", "year": null, "place": "Uppsala, Sweden", "source_id": null },
+    "death": { "date": null, "year": null, "place": null, "age_at_death": null, "source_id": null },
+    "occupation": ["Läkare (physician)"],
+    "notes": "",
+    "sources": [],
+    "conflicts": [],
+    "status": "confirmed"
+  },
+  {
+    "id": "P0007",
+    "names": [{ "value": "Henrik Söderström", "type": "birth", "source_id": null }],
+    "sex": "M",
+    "birth": { "date": "1948-12-25", "year": null, "place": "Stockholm, Sweden", "source_id": null },
+    "death": { "date": null, "year": null, "place": null, "age_at_death": null, "source_id": null },
+    "occupation": ["Arkitekt (architect)"],
+    "notes": "",
+    "sources": [],
+    "conflicts": [],
+    "status": "confirmed"
+  },
+  {
+    "id": "P0008",
+    "names": [
+      { "value": "Astrid Söderström", "type": "birth", "source_id": null },
+      { "value": "Åsa Söderström", "type": "variant", "source_id": null }
+    ],
+    "sex": "F",
+    "birth": { "date": "1975-04-18", "year": null, "place": "Stockholm, Sweden", "source_id": null },
+    "death": { "date": null, "year": null, "place": null, "age_at_death": null, "source_id": null },
+    "occupation": [],
+    "notes": "",
+    "sources": [],
+    "conflicts": [],
+    "status": "confirmed"
+  }
+]
