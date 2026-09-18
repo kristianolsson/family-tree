@@ -26,10 +26,10 @@ different people who happen to share a name.
 
 ## Source images
 
-`static/data/images/` holds all 26 source photos, named by source id
-(`S009.jpg`, matching `sources.json`'s own `id`), and `sources.json`'s
-`file` field points at `images/S009.jpg` etc. This roughly doubles the
-deployed site's size (~46MB of images), but follows the same
+`static/data/images/` holds each source's photo, named by source id
+(`S001.jpg`, matching `sources.json`'s own `id`), and `sources.json`'s
+`file` field points at `images/S001.jpg` etc. An image-heavy dataset can
+meaningfully increase the deployed site's size, but this follows the same
 runtime-fetch-not-bundled pattern as the JSON data — nothing under
 `static/data/` is ever imported into the JS bundle.
 
