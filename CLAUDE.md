@@ -41,6 +41,11 @@ below means whatever you've put in `static/data/` in your own copy.
   missing image files, unflagged birth-date collisions, birth places
   missing from `places.json`) — run it after
   touching any dataset file.
+- `npm run geocode` resolves new birth places to map coordinates in
+  `static/data/places.json` (needs network; run it after adding people
+  with new birth places — the `add-data` skill does). A coordinate you set
+  by hand must have `"status": "manual"`, or a later geocode run may
+  replace it.
 - To add new data — one or more people/families, a source document, or
   both — transcription, dedupe against existing people/families, ID
   assignment, review-queue flagging, and (on first use) setting
@@ -88,8 +93,11 @@ Conflicts resolve per-path, mechanically:
 
       git checkout --ours src/lib/config.js && git add src/lib/config.js
 
-- `static/data/*.json`, `static/data/images/` — take **ours** (your real
-  data over the template's sample data):
+- `static/data/*.json` (including `places.json`), `static/data/images/` —
+  take **ours** (your real data over the template's sample data). Note git
+  only conflicts on files both sides changed: a derived repo that has no
+  `places.json` yet receives the template's fictional sample on first
+  sync — empty it (`{}`) before geocoding:
 
       git checkout --ours static/data/ && git add static/data/
 

@@ -3,9 +3,9 @@
 ## Data flow
 
 The dataset files (`people.json`, `families.json`, `sources.json`,
-`review_queue.json`, and the optional `places.json`) live in `static/data/` and are fetched by the browser
-at runtime (`src/lib/data/loadDataset.js`) — never imported into the JS
-bundle. This is deliberate: updating the dataset means overwriting those
+`review_queue.json`, and the optional `places.json`) live in
+`static/data/` and are fetched by the browser at runtime
+(`src/lib/data/loadDataset.js`) — never imported into the JS bundle. This is deliberate: updating the dataset means overwriting those
 files on the host, with no rebuild of the app. `review_queue.json` is
 copied for future use but not currently read by the app.
 
@@ -71,8 +71,14 @@ one per union with a date.
 
 ## Ancestor map
 
-A "Map" button on the person page opens `MapOverlay.svelte`, a heatmap of
-the selected person's ancestors' birthplaces.
+A "Map" button (globe icon, first item in the toolbar's right-hand group,
+left of the Up/Down pickers) on the person page opens `MapOverlay.svelte`,
+a full-viewport heatmap of the selected person's ancestors' birthplaces.
+It uses the whole ancestry regardless of the levels limit and counts
+ancestors only — not the selected person. The header shows "N of M
+ancestors placed" so people with no recorded or unresolved birth place are
+visible as a gap; with no known ancestors, or none with coordinates, it
+shows a short message instead of the map.
 
 - `src/lib/data/ancestorMap.js` — pure functions: `collectAncestors()`
   walks the model's `childFamilyOf` links, and `buildHeatData()` groups
@@ -100,12 +106,17 @@ seam as `family-chart` in `TreeView`; verify with
 
 Geocoding: a transient network error leaves a place uncached, so the next
 run retries it; a genuine no-result is cached as `unresolved` and retried
-only with `--retry`. `places.json` is user-owned data (`npm run
-sync` only rewrites files that conflict, so a derived repo keeps its own;
-but it first receives the sample file — empty it, see `docs/schema.md`); `geocode-places.mjs` is
-template-owned. The `add-data` skill runs geocode, and the validator flags
-birth places missing from `places.json`. The Leaflet rendering is covered
-by tests and the build, not by automated visual checks.
+only with `--retry`; `manual` entries are never overwritten. The script
+respects Nominatim's usage policy (descriptive User-Agent, at most one
+request per second).
+
+Ownership: `places.json` is user-owned data and `geocode-places.mjs` is
+template-owned. `npm run sync` only rewrites files that conflict, so a
+derived repo keeps its own `places.json`, but it first receives the
+template's fictional sample — empty it (see `docs/schema.md`). The
+`add-data` skill runs geocode, and the validator flags birth places
+missing from `places.json`. The Leaflet rendering is covered by tests and
+the build, not by automated visual checks.
 
 ## Routing
 
@@ -145,8 +156,7 @@ descendants or a deeply-recorded ancestry. `person/[id]/+page.svelte`
 holds both as local `$state` (`DEFAULT_PROGENY_DEPTH = 2`,
 `DEFAULT_ANCESTRY_DEPTH = 5`, from `src/lib/config-template.js`; either can
 be overridden by exporting the same name from your own `src/lib/config.js`
-— see
-"Two config files" below), passed into `TreeView`'s
+— see "Two config files" above), passed into `TreeView`'s
 `progenyDepth`/`ancestryDepth` props (which call
 `setProgenyDepth`/`setAncestryDepth`, using `undefined` for the `'all'`
 option) and into two `DepthPicker.svelte` instances (labeled "Up" and
