@@ -51,7 +51,8 @@
         hitByLink.set(link.id, hit);
       }
       hit.dataset.group = key;
-      hit.setAttribute('d', path.getAttribute('d') || '');
+      const d = path.getAttribute('d') || '';
+      if (hit.getAttribute('d') !== d) hit.setAttribute('d', d);
       path.classList.toggle('link-hover', key === hoverKey);
       path.classList.toggle('link-selected', key === selectedKey);
     }
@@ -90,7 +91,11 @@
     if (!container) return;
     // Paths are created and animated by family-chart; keep the hit paths
     // (and highlight classes) in step with every change to them.
-    const observer = new MutationObserver(syncLinkHits);
+    // Ignore our own writes to the hit group, or every sync would trigger
+    // another one forever.
+    const observer = new MutationObserver((records) => {
+      if (records.some((r) => !hitGroup || !hitGroup.contains(r.target))) syncLinkHits();
+    });
     observer.observe(container, {
       subtree: true,
       childList: true,
