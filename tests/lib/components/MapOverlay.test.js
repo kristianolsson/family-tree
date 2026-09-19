@@ -32,4 +32,9 @@ describe('MapOverlay', () => {
     await fireEvent.keyDown(window, { key: 'Escape' });
     expect(onClose).toHaveBeenCalledTimes(2);
   });
+  it('shows a hint instead of the map when no ancestor has coordinates', () => {
+    render(MapOverlay, { props: { model, personId: 'C', places: {}, onClose: vi.fn() } });
+    expect(screen.getByText(/npm run geocode/)).toBeInTheDocument();
+    expect(screen.queryByTestId('stub-map')).not.toBeInTheDocument();
+  });
 });

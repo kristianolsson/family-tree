@@ -11,7 +11,8 @@
     let cancelled = false;
 
     (async () => {
-      const L = (await import('leaflet')).default;
+      const leaflet = await import('leaflet');
+      const L = leaflet.default ?? leaflet;
       // leaflet.heat reads the global L when it loads, so set it first.
       window.L = L;
       await import('leaflet.heat');
@@ -25,7 +26,7 @@
 
       L.heatLayer(
         groups.map((g) => [g.lat, g.lng, g.count]),
-        { radius: 25, blur: 20 }
+        { radius: 25, blur: 20, max: Math.max(...groups.map((g) => g.count)) }
       ).addTo(map);
 
       for (const g of groups) {
@@ -56,7 +57,7 @@
 
 <style>
   .map {
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    inset: 0;
   }
 </style>
