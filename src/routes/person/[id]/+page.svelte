@@ -72,6 +72,23 @@
       <SearchBox index={searchIndex} onSelect={selectPerson} />
     </div>
     <div class="depth-pickers">
+      <button type="button" class="map-btn" aria-label="Show ancestor map" onclick={openMap}>
+        <svg
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="9" />
+          <ellipse cx="12" cy="12" rx="4" ry="9" />
+          <path d="M3 12 H21" />
+        </svg>
+        Map
+      </button>
       <DepthPicker
         label="Up"
         options={DEPTH_OPTIONS}
@@ -84,7 +101,6 @@
         value={progenyDepth}
         onChange={(v) => (progenyDepth = v)}
       />
-      <button type="button" class="map-btn" onclick={openMap}>Map</button>
     </div>
   </div>
   <div class="main">
@@ -166,6 +182,9 @@
     gap: 0.5rem 1rem;
   }
   .map-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     padding: 0.25rem 0.6rem;
     border: 1px solid var(--rule);
     border-radius: 4px;
