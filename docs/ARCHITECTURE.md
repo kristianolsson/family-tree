@@ -181,8 +181,11 @@ whole tree one step in that direction, not just the clicked branch.
 can be followed. `family-chart` draws each edge as a 1px `path.link` and
 re-renders it on every update, so a `MutationObserver` mirrors each one with
 an invisible 14px-wide `path.link-hit` in a sibling group placed below the
-cards, and re-applies `link-hover` / `link-selected` classes to the real
-paths. Hover and selection are keyed by `linkGroupKey()`
+cards (wider, 28px, on `pointer: coarse` touch screens), and re-applies
+`link-hover` / `link-selected` classes to the real paths. `family-chart`'s
+full-size HTML card layer (`#htmlSvg`) sits above the SVG, so it is set to
+`pointer-events: none` (cards opt back in themselves) or edges would never
+receive events. Hover and selection are keyed by `linkGroupKey()`
 (`treeViewAdapter.js`), which groups a couple's spouse line with all of
 their parent/child lines, so the whole family unit highlights together. One
 group is selected at a time; clicking it again or empty canvas clears it,

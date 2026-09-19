@@ -214,6 +214,13 @@
     stroke: var(--accent);
     stroke-width: 4px;
   }
+  /* family-chart's full-size HTML card layer sits above the SVG and would
+     swallow every pointer event, so edges could never be hovered or tapped.
+     Cards opt back in with their own `pointer-events: auto`; pan/zoom
+     listens on an ancestor, so it still works over empty space. */
+  .tree-view :global(#htmlSvg) {
+    pointer-events: none;
+  }
   /* Invisible, wide hit target mirroring each edge (see syncLinkHits). */
   .tree-view :global(.link-hit) {
     fill: none;
@@ -221,6 +228,13 @@
     stroke-width: 14px;
     pointer-events: stroke;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Fingers are far less precise than a mouse. */
+  @media (pointer: coarse) {
+    .tree-view :global(.link-hit) {
+      stroke-width: 28px;
+    }
   }
   /* Centered on a card's top (up) or bottom (down) edge -- .card itself is
      `position: relative` (family-chart's own CSS). */
