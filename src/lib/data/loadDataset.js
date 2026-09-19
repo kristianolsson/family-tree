@@ -9,13 +9,26 @@ function fetchJson(fetchImpl, url) {
   });
 }
 
+function fetchPlaces(fetchImpl) {
+  return fetchImpl(`${base}/data/places.json`)
+    .then((r) => (r.ok ? r.json() : {}))
+    .then((body) => (body && typeof body === 'object' && !Array.isArray(body) ? body : {}))
+    .catch(() => ({}));
+}
+
 export function loadDataset(fetchImpl = fetch) {
   if (!cached) {
     const promise = Promise.all([
       fetchJson(fetchImpl, `${base}/data/people.json`),
       fetchJson(fetchImpl, `${base}/data/families.json`),
-      fetchJson(fetchImpl, `${base}/data/sources.json`)
-    ]).then(([people, families, sources]) => ({ people, families, sources }));
+      fetchJson(fetchImpl, `${base}/data/sources.json`),
+      fetchPlaces(fetchImpl)
+    ]).then(([people, families, sources, places]) => ({
+      people,
+      families,
+      sources,
+      places
+    }));
     promise.catch(() => {
       cached = null;
     });

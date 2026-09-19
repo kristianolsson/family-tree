@@ -13,6 +13,7 @@ describe('loadDataset', () => {
       if (url === '/data/people.json') return jsonResponse([{ id: 'P1' }]);
       if (url === '/data/families.json') return jsonResponse([{ id: 'F1' }]);
       if (url === '/data/sources.json') return jsonResponse([{ id: 'S1' }]);
+      if (url === '/data/places.json') return jsonResponse({ 'A, B': { lat: 1, lng: 2, status: 'auto' } });
       throw new Error(`unexpected url ${url}`);
     });
 
@@ -21,7 +22,8 @@ describe('loadDataset', () => {
     expect(result).toEqual({
       people: [{ id: 'P1' }],
       families: [{ id: 'F1' }],
-      sources: [{ id: 'S1' }]
+      sources: [{ id: 'S1' }],
+      places: { 'A, B': { lat: 1, lng: 2, status: 'auto' } }
     });
   });
 
@@ -31,6 +33,28 @@ describe('loadDataset', () => {
     await loadDataset(fetchMock);
     await loadDataset(fetchMock);
 
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+
+  function withPlaces(placesImpl) {
+    return vi.fn((url) => {
+      if (url === '/data/places.json') return placesImpl();
+      return jsonResponse([]);
+    });
+  }
+
+  it('yields empty places when places.json is 404', async () => {
+    const result = await loadDataset(withPlaces(() => Promise.resolve({ ok: false, status: 404 })));
+    expect(result.places).toEqual({});
+  });
+
+  it('yields empty places when the places fetch rejects', async () => {
+    const result = await loadDataset(withPlaces(() => Promise.reject(new Error('network'))));
+    expect(result.places).toEqual({});
+  });
+
+  it('yields empty places when places.json is an array', async () => {
+    const result = await loadDataset(withPlaces(() => jsonResponse([])));
+    expect(result.places).toEqual({});
   });
 });

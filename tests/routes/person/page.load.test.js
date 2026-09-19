@@ -7,7 +7,10 @@ beforeEach(() => resetDatasetCache());
 
 function makeFetch() {
   return vi.fn((url) => {
-    const body = url.includes('people') ? people : url.includes('families') ? families : sources;
+    const body = url.includes('places')
+      ? {}
+      : url.includes('people')
+      ? people : url.includes('families') ? families : sources;
     return Promise.resolve({ ok: true, json: () => Promise.resolve(body) });
   });
 }
@@ -16,6 +19,7 @@ describe('[id] load', () => {
   it('builds the model and returns it with the requested person id', async () => {
     const result = await load({ params: { id: 'P1' }, fetch: makeFetch() });
     expect(result.personId).toBe('P1');
+    expect(result.places).toEqual({});
     expect(result.model.peopleById.get('P1').names[0].value).toBe('Anders Eriksson');
   });
 

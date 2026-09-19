@@ -69,11 +69,12 @@ function resetDataFiles() {
   for (const file of BLANK_DATASET_FILES) {
     writeFileSync(join(REPO_ROOT, 'static', 'data', file), '[]\n');
   }
+  writeFileSync(join(REPO_ROOT, 'static', 'data', 'places.json'), '{}\n');
   const configPath = join(REPO_ROOT, 'src', 'lib', 'config.js');
   const configSource = readFileSync(configPath, 'utf8');
   writeFileSync(configPath, setDefaultPersonId(configSource, ''));
   console.log(
-    'Reset static/data/*.json to empty arrays and cleared DEFAULT_PERSON_ID in ' +
+    'Reset static/data/*.json to empty arrays (places.json to {}) and cleared DEFAULT_PERSON_ID in ' +
       'src/lib/config.js -- review the change with `git status`/`git diff` before committing.'
   );
 }

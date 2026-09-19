@@ -4,7 +4,8 @@ import { buildFamilyTreeModel } from '$lib/data/adapter.js';
 
 export async function load({ params, fetch }) {
   const dataset = await loadDataset(fetch);
+  const { places } = dataset;
   const model = buildFamilyTreeModel(dataset);
   if (!model.peopleById.has(params.id)) error(404, 'Person not found');
-  return { model, personId: params.id };
+  return { model, personId: params.id, places };
 }
