@@ -24,7 +24,9 @@ family tree dataset."
 
 - This skill edits the dataset **directly in this repo**:
   `static/data/people.json`, `static/data/families.json`,
-  `static/data/sources.json`, `static/data/review_queue.json`, with images
+  `static/data/sources.json`, `static/data/review_queue.json`,
+  `static/data/places.json` (birth-place coordinates, filled by
+  `npm run geocode` in Step 5), with images
   in `static/data/images/`. This is the canonical dataset — there's no
   separate source to sync from.
 - Read `docs/schema.md` in this repo before editing anything, even if
@@ -186,18 +188,28 @@ invent a different one:
 
 ## Step 5: Validate before finishing
 
-Run the repo's validation script, then the test suite and build:
+First resolve any new birth places to map coordinates, then run the
+repo's validation script, the test suite, and the build:
 
 ```bash
+npm run geocode
 python3 scripts/validate_dataset.py --dir static/data
 npm test
 npm run build
 ```
 
+`npm run geocode` looks up any birth place not yet in `places.json` via
+Nominatim (needs network), skips places already cached or hand-set, and
+prints any it couldn't resolve — fix those by hand in `places.json` (see
+`docs/schema.md`) or report them to the owner. A network error leaves a
+place unrecorded so the next run retries it.
+
 The validator checks: no orphan person/source references, no duplicate
 exact-partner-pair family records, every source's `file` exists on disk,
 and flags any birth-date collision between dissimilarly-named people
-that isn't already covered by an open `DUP-*` review_queue entry. Fix
+that isn't already covered by an open `DUP-*` review_queue entry. It also
+checks that every birth place has a `places.json` entry (when that file
+exists). Fix
 anything it flags — or, for a genuine new dedupe question, add the
 `review_queue.json` entry Step 3 describes — before reporting done.
 Don't report done with a failing validation run, test, or build.
@@ -223,5 +235,6 @@ rest of the run — don't commit it separately.
 
 Summarize: the new source id, how many new person/family records were
 created vs. merged into existing ones, and anything added to
-`review_queue.json` that needs a decision. Leave the change as an
+`review_queue.json` that needs a decision, and any birth places left
+unresolved by geocoding. Leave the change as an
 uncommitted working-tree edit unless asked to commit it.

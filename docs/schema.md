@@ -37,6 +37,8 @@
 - `sources.json` — one record per photographed document (~ GEDCOM SOUR)
 - `review_queue.json` — open questions, conflicts, low-confidence items
   needing a human's judgment; not currently read by the app itself
+- `places.json` — optional; birth-place coordinates for the ancestor
+  heatmap (see below)
 
 ## person object
 ```
@@ -102,6 +104,26 @@ printed_index | handwritten_chart | handwritten_note`), `description`,
 { "id": "R001", "person_id": "P0001 or null", "type": "conflict | low_confidence | needs_transcription | question",
   "description": "...", "status": "open | resolved", "resolution": null }
 ```
+
+## places.json
+Optional. An object keyed by the exact `birth.place` string of a person,
+each value holding coordinates and how they were obtained:
+```
+{
+  "Springfield, Exampleland": {"lat": 59.33, "lng": 18.07, "status": "auto | manual | unresolved"}
+}
+```
+- `auto` — resolved by `npm run geocode` (Nominatim lookup; needs network).
+- `manual` — set by hand; `npm run geocode` never overwrites it.
+- `unresolved` — the lookup found nothing; `lat`/`lng` are `null`. It is
+  not retried unless you run `npm run geocode -- --retry`. A transient
+  network error is not cached, so the next plain run retries that place.
+
+`npm run geocode` collects the unique, trimmed birth places, skips any
+already cached, and prints the places still unresolved. To fix one by
+hand, set its `lat` and `lng` and change `status` to `"manual"`. The
+validator reports any birth place missing from this file (only when the
+file exists, so older datasets without it still pass).
 
 ## Sample dataset
 

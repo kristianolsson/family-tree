@@ -37,7 +37,7 @@ def main():
     parser.add_argument(
         "--dir",
         default="static/data",
-        help="directory containing people.json/families.json/sources.json/review_queue.json",
+        help="directory containing people.json/families.json/sources.json/review_queue.json (and optionally places.json)",
     )
     args = parser.parse_args()
     data_dir = os.path.expanduser(args.dir)
@@ -104,6 +104,16 @@ def main():
         ]
         if not any(os.path.exists(c) for c in candidates):
             problems.append(f"{s['id']}: file not found ({file_field})")
+
+    # Every birth place has a places.json entry (run `npm run geocode` to fill gaps).
+    places_path = os.path.join(data_dir, "places.json")
+    if os.path.exists(places_path):
+        with open(places_path, encoding="utf-8") as f:
+            places = json.load(f)
+        for p in people:
+            place = ((p.get("birth") or {}).get("place") or "").strip()
+            if place and place not in places:
+                problems.append(f"{p['id']}: birth place '{place}' missing from places.json (run npm run geocode)")
 
     # Birth-date collisions between dissimilarly-named people, not already flagged in review_queue.
     flagged_pairs = set()
