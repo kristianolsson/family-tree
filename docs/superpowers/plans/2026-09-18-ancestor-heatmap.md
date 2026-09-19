@@ -98,6 +98,11 @@ describe('buildHeatData', () => {
     ]);
   });
 
+  it('trims place strings before lookup (matches the geocode script keys)', () => {
+    const r = buildHeatData(model([person('A', ' X, Land ')], []), ['A'], places);
+    expect(r.placed).toBe(1);
+  });
+
   it('handles an empty places map', () => {
     const r = buildHeatData(m, ['A'], {});
     expect(r).toEqual({ total: 1, placed: 0, groups: [] });
@@ -127,7 +132,7 @@ export function buildHeatData(model, ancestorIds, places) {
   const groups = new Map();
   let placed = 0;
   for (const id of ancestorIds) {
-    const place = model.peopleById.get(id)?.birth?.place;
+    const place = model.peopleById.get(id)?.birth?.place?.trim();
     const coords = place ? places[place] : null;
     if (!coords || coords.lat == null || coords.lng == null) continue;
     placed += 1;
@@ -341,7 +346,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 }
 ```
 
-(Note: `.trim()` in `collectBirthPlaces` means people.json place strings with surrounding whitespace map to the trimmed key; the app looks up the raw `birth.place`. Keep consistent: the app-side lookup in `buildHeatData` must use `place.trim()` too — update Task 1's `buildHeatData` to `const place = ...birth?.place?.trim()` in this task, and add a test for it.)
+(`buildHeatData` already trims place strings (Task 1), matching these keys.)
 
 - [ ] **Step 4:** Add the npm script; run `npm test` and `npm run build` — PASS.
 - [ ] **Step 5:** Commit `feat: geocode-places script`.
