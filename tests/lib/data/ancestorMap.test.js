@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildFamilyTreeModel } from '../../../src/lib/data/adapter.js';
-import { collectAncestors, buildHeatData } from '../../../src/lib/data/ancestorMap.js';
+import { collectAncestors, buildHeatData, markerRadius } from '../../../src/lib/data/ancestorMap.js';
 
 const person = (id, place) => ({
   id,
@@ -69,5 +69,16 @@ describe('buildHeatData', () => {
   it('handles an empty places map', () => {
     const r = buildHeatData(m, ['A'], {});
     expect(r).toEqual({ total: 1, placed: 0, groups: [] });
+  });
+});
+
+describe('markerRadius', () => {
+  it('grows with the count, so busier places look bigger', () => {
+    expect(markerRadius(1)).toBe(9);
+    expect(markerRadius(2)).toBeGreaterThan(markerRadius(1));
+    expect(markerRadius(23)).toBeGreaterThan(markerRadius(2) * 2);
+  });
+  it('is capped', () => {
+    expect(markerRadius(10000)).toBe(30);
   });
 });

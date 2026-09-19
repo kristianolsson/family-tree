@@ -26,3 +26,7 @@ export function buildHeatData(model, ancestorIds, places = {}) {
   }
   return { total: ancestorIds.length, placed, groups: [...groups.values()] };
 }
+
+export function markerRadius(count) {
+  return Math.min(30, 5 + 4 * Math.sqrt(count));
+}

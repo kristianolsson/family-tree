@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { markerRadius } from '$lib/data/ancestorMap.js';
   import 'leaflet/dist/leaflet.css';
 
   let { groups } = $props();
@@ -29,9 +30,14 @@
         { radius: 25, blur: 20, max: Math.max(1, ...groups.map((g) => g.count)) }
       ).addTo(map);
 
-      for (const g of groups) {
+      // Biggest first so small circles stay clickable on top of large ones.
+      for (const g of [...groups].sort((a, b) => b.count - a.count)) {
         const text = `${g.place} — ${g.count} ancestor${g.count === 1 ? '' : 's'}`;
-        L.circleMarker([g.lat, g.lng], { radius: 4 })
+        L.circleMarker([g.lat, g.lng], {
+          radius: markerRadius(g.count),
+          weight: 1,
+          fillOpacity: 0.35
+        })
           .addTo(map)
           .bindPopup(document.createTextNode(text));
       }

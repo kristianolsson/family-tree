@@ -81,7 +81,8 @@ the selected person's ancestors' birthplaces.
   empty-state hint when there are no coordinates).
 - `src/lib/components/MapView.svelte` — the Leaflet map and `leaflet.heat`
   layer, with OpenStreetMap tiles. Heat intensity is scaled to the busiest
-  place (`max` = the largest group count).
+  place (`max` = the largest group count). Each place also gets a circle
+  whose radius grows with its ancestor count (`markerRadius()`).
 - `scripts/geocode-places.mjs` (`npm run geocode`) — fills `places.json`.
 
 Data flow: `static/data/places.json` -> `loadDataset.js` (fetched at runtime
