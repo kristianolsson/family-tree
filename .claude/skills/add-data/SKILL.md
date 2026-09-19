@@ -202,15 +202,17 @@ npm run build
 Nominatim (needs network), skips places already cached or hand-set, and
 prints any it couldn't resolve — fix those by hand in `places.json` (see
 `docs/schema.md`) or report them to the owner. A network error leaves a
-place unrecorded so the next run retries it.
+place unrecorded so the next run retries it. With no network, geocoding
+can't run: add each new place to `places.json` as
+`{"lat": null, "lng": null, "status": "unresolved"}` so validation passes,
+and tell the owner to run `npm run geocode -- --retry` later.
 
 The validator checks: no orphan person/source references, no duplicate
 exact-partner-pair family records, every source's `file` exists on disk,
 and flags any birth-date collision between dissimilarly-named people
 that isn't already covered by an open `DUP-*` review_queue entry. It also
 checks that every birth place has a `places.json` entry (when that file
-exists). Fix
-anything it flags — or, for a genuine new dedupe question, add the
+exists). Fix anything it flags — or, for a genuine new dedupe question, add the
 `review_queue.json` entry Step 3 describes — before reporting done.
 Don't report done with a failing validation run, test, or build.
 

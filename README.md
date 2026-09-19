@@ -50,8 +50,6 @@ Outputs a static site to `build/`.
    `src/lib/config.js` to your new person's id yourself, or `/` won't
    have anyone to redirect to.
 
-3. Deploy — see "Deploy" below.
-
 To use the Map overlay, resolve birth-place coordinates into
 `static/data/places.json` (schema in `docs/schema.md`):
 
@@ -61,6 +59,8 @@ Run it again after adding people with new birth places. It looks places up
 via OpenStreetMap's Nominatim, so it needs network access (about one
 request per second). Without `places.json` the app still works; the map
 just shows a hint. Map tiles are (c) OpenStreetMap contributors.
+
+3. Deploy — see "Deploy" below.
 
 After any dataset edit:
 

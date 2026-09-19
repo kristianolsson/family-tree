@@ -11,7 +11,7 @@ export function collectAncestors(model, personId) {
   return [...seen];
 }
 
-export function buildHeatData(model, ancestorIds, places) {
+export function buildHeatData(model, ancestorIds, places = {}) {
   const groups = new Map();
   let placed = 0;
   for (const id of ancestorIds) {

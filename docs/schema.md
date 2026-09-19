@@ -121,9 +121,19 @@ each value holding coordinates and how they were obtained:
 
 `npm run geocode` collects the unique, trimmed birth places, skips any
 already cached, and prints the places still unresolved. To fix one by
-hand, set its `lat` and `lng` and change `status` to `"manual"`. The
+hand, set its `lat` and `lng` and change `status` to `"manual"`. Keys
+must be the exact trimmed place string. If you can't reach the network
+(so geocoding can't run), add the place as
+`{"lat": null, "lng": null, "status": "unresolved"}` so validation passes,
+and re-run `npm run geocode -- --retry` later. The
 validator reports any birth place missing from this file (only when the
 file exists, so older datasets without it still pass).
+
+The template ships a small fictional sample `places.json` matching the
+sample dataset. A repo with its own data should empty it (`{}`) before
+running `npm run geocode` — `npm run setup` does this on reset, and a
+derived repo receives the sample file on the first sync after this
+feature. `geocode` never removes or corrects entries it didn't create.
 
 ## Sample dataset
 

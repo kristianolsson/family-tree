@@ -26,7 +26,7 @@
 
       L.heatLayer(
         groups.map((g) => [g.lat, g.lng, g.count]),
-        { radius: 25, blur: 20, max: Math.max(...groups.map((g) => g.count)) }
+        { radius: 25, blur: 20, max: Math.max(1, ...groups.map((g) => g.count)) }
       ).addTo(map);
 
       for (const g of groups) {

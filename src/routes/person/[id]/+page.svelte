@@ -169,14 +169,14 @@
     padding: 0.25rem 0.6rem;
     border: 1px solid var(--rule);
     border-radius: 4px;
-    background: var(--surface);
+    background: var(--bg);
     color: var(--ink);
     font-family: inherit;
     font-size: inherit;
     cursor: pointer;
   }
   .map-btn:hover {
-    background: var(--bg);
+    background: var(--surface);
   }
   .toolbar {
     display: flex;

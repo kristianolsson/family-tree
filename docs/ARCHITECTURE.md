@@ -2,8 +2,8 @@
 
 ## Data flow
 
-The four dataset files (`people.json`, `families.json`, `sources.json`,
-`review_queue.json`) live in `static/data/` and are fetched by the browser
+The dataset files (`people.json`, `families.json`, `sources.json`,
+`review_queue.json`, and the optional `places.json`) live in `static/data/` and are fetched by the browser
 at runtime (`src/lib/data/loadDataset.js`) — never imported into the JS
 bundle. This is deliberate: updating the dataset means overwriting those
 files on the host, with no rebuild of the app. `review_queue.json` is
@@ -92,12 +92,14 @@ hint, the app still works) -> `person/[id]/+page.svelte` -> `MapOverlay`.
 The overlay is lazy-loaded: the page `import()`s `MapOverlay.svelte` on
 first click, so Leaflet stays out of the initial bundle. Leaflet and
 `leaflet.heat` are imported only in `MapView.svelte` — the same kind of
-seam as `family-chart` in `TreeView`; verify with `grep -rli leaflet src/` (should list only `MapView.svelte`).
+seam as `family-chart` in `TreeView`; verify with
+`grep -rli leaflet src/` (should list only `MapView.svelte`).
 
 Geocoding: a transient network error leaves a place uncached, so the next
 run retries it; a genuine no-result is cached as `unresolved` and retried
-only with `--retry`. `places.json` is user-owned data (kept by `npm run
-sync` under the existing `static/data/` rule); `geocode-places.mjs` is
+only with `--retry`. `places.json` is user-owned data (`npm run
+sync` only rewrites files that conflict, so a derived repo keeps its own;
+but it first receives the sample file — empty it, see `docs/schema.md`); `geocode-places.mjs` is
 template-owned. The `add-data` skill runs geocode, and the validator flags
 birth places missing from `places.json`. The Leaflet rendering is covered
 by tests and the build, not by automated visual checks.

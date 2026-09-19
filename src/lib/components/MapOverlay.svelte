@@ -19,7 +19,7 @@
   </header>
   <div class="map-body">
     {#if heat.placed === 0}
-      <p class="map-empty">No birthplaces with coordinates yet — run `npm run geocode`.</p>
+      <p class="map-empty">No birthplaces with coordinates yet — run <code>npm run geocode</code>.</p>
     {:else}
       <MapView groups={heat.groups} />
     {/if}

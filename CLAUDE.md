@@ -20,6 +20,9 @@ below means whatever you've put in `static/data/` in your own copy.
   `family-chart` (the tree library). Before committing any change near the
   tree view, run `grep -rl "family-chart" src/` — it must list only those
   two files.
+- **The map seam.** Only `src/lib/components/MapView.svelte` may import
+  `leaflet` or `leaflet.heat`. Verify with `grep -rli leaflet src/` — it
+  must list only that file.
 - **Data is fetched at runtime, never bundled.** Everything under
   `static/data/` (JSON + `images/`) is loaded by the browser via `fetch`,
   not imported into JS, so the dataset can be updated by overwriting files
@@ -35,7 +38,8 @@ below means whatever you've put in `static/data/` in your own copy.
 - Run `npm test` and `npm run build` before considering any change done.
 - `python3 scripts/validate_dataset.py --dir static/data` checks
   referential integrity (orphan references, duplicate family records,
-  missing image files, unflagged birth-date collisions) — run it after
+  missing image files, unflagged birth-date collisions, birth places
+  missing from `places.json`) — run it after
   touching any dataset file.
 - To add new data — one or more people/families, a source document, or
   both — transcription, dedupe against existing people/families, ID
