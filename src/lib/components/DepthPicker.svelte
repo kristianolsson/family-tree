@@ -1,23 +1,21 @@
 <script>
-  import { PROGENY_DEPTH_OPTIONS } from '$lib/config.js';
+  let { label, options, value, onChange } = $props();
 
-  let { value, onChange } = $props();
-
-  function label(option) {
+  function optionLabel(option) {
     return option === 'all' ? 'All' : String(option);
   }
 </script>
 
-<div class="depth-picker" role="group" aria-label="Levels down to show">
-  <span class="depth-picker-label">Levels:</span>
-  {#each PROGENY_DEPTH_OPTIONS as option (option)}
+<div class="depth-picker" role="group" aria-label={label}>
+  <span class="depth-picker-label">{label}:</span>
+  {#each options as option (option)}
     <button
       type="button"
       class:active={option === value}
       aria-pressed={option === value}
       onclick={() => onChange(option)}
     >
-      {label(option)}
+      {optionLabel(option)}
     </button>
   {/each}
 </div>

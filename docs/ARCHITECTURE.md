@@ -77,20 +77,36 @@ Clicking a tree node or a search result calls SvelteKit's
 (back/forward and shareable per-person links work) without unmounting
 `TreeView`/`PersonPanel`; they just re-render for the new id.
 
-## Levels-down control
+## Levels up/down control
 
-`family-chart` supports capping how many generations of descendants it
-renders below the centered person (`chart.setProgenyDepth(n)`) — `0`
-means only the centered person, `1` adds their children, `2` adds
-grandchildren, and so on; leaving it unset shows every generation, which
-can make the tree very wide when centered on an ancestor with many
-descendants. `person/[id]/+page.svelte` holds the current depth as local
-`$state` (default `DEFAULT_PROGENY_DEPTH = 1`, from `src/lib/config.js`),
-passed into `TreeView`'s `progenyDepth` prop (which calls
-`setProgenyDepth`, using `undefined` for the `'all'` option) and into
-`DepthPicker.svelte`, a small one-click `1 / 2 / 3 / All` control. This is
-a session-only UI preference, not part of the URL — it's independent of
-which person is centered.
+`family-chart` supports capping how many generations it renders in each
+direction from the centered person: `chart.setProgenyDepth(n)` for
+descendants (`0` = only the centered person, `1` adds their children, and
+so on) and the symmetric `chart.setAncestryDepth(n)` for ancestors.
+Leaving either unset shows every generation in that direction, which can
+make the tree very tall/wide when centered on someone with many
+descendants or a deeply-recorded ancestry. `person/[id]/+page.svelte`
+holds both as local `$state` (`DEFAULT_PROGENY_DEPTH = 2`,
+`DEFAULT_ANCESTRY_DEPTH = 5`, from `src/lib/config.js`), passed into
+`TreeView`'s `progenyDepth`/`ancestryDepth` props (which call
+`setProgenyDepth`/`setAncestryDepth`, using `undefined` for the `'all'`
+option) and into two `DepthPicker.svelte` instances (labeled "Up" and
+"Down"), a small one-click `1 / 2 / 3 / 5 / 10 / All` control shared by
+both directions (`DEPTH_OPTIONS` in `config.js`). This is a session-only
+UI preference, not part of the URL — it's independent of which person is
+centered.
+
+Every rendered card carries `all_rels_displayed` (false when a
+parent/spouse/child of that person is cut off by the current depth limit)
+and `is_ancestry` (true on the ancestor side) — both computed by
+`family-chart` itself. `TreeView.svelte` uses `card.setOnCardUpdate()` to
+overlay a small "+" button on any such card, positioned via the card's own
+`position: relative`; clicking it (stopping propagation so it doesn't also
+select that person) calls `onExpandDepth('up' | 'down')`, which
+`person/[id]/+page.svelte` handles by stepping the corresponding depth to
+the next value in `DEPTH_OPTIONS`. `family-chart` has no notion of
+per-branch depth, so this always expands the whole tree one step in that
+direction, not just the clicked branch.
 
 ## Responsive detail panel
 

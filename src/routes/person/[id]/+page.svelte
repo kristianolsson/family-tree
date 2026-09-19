@@ -7,17 +7,29 @@
   import DepthPicker from '$lib/components/DepthPicker.svelte';
   import { buildSearchIndex } from '$lib/data/search.js';
   import { primaryName } from '$lib/data/formatDate.js';
-  import { DEFAULT_PROGENY_DEPTH } from '$lib/config.js';
+  import { DEFAULT_PROGENY_DEPTH, DEFAULT_ANCESTRY_DEPTH, DEPTH_OPTIONS } from '$lib/config.js';
 
   let { data } = $props();
 
   let searchIndex = $derived(buildSearchIndex(data.model.peopleById));
   let person = $derived(data.model.peopleById.get(data.personId));
   let progenyDepth = $state(DEFAULT_PROGENY_DEPTH);
+  let ancestryDepth = $state(DEFAULT_ANCESTRY_DEPTH);
   let panelOpen = $state(true);
 
   function selectPerson(id) {
     goto(`${base}/person/${id}`);
+  }
+
+  function expandDepth(direction) {
+    const current = direction === 'up' ? ancestryDepth : progenyDepth;
+    const nextIndex = Math.min(DEPTH_OPTIONS.indexOf(current) + 1, DEPTH_OPTIONS.length - 1);
+    const next = DEPTH_OPTIONS[nextIndex];
+    if (direction === 'up') {
+      ancestryDepth = next;
+    } else {
+      progenyDepth = next;
+    }
   }
 </script>
 
@@ -47,14 +59,29 @@
       </a>
       <SearchBox index={searchIndex} onSelect={selectPerson} />
     </div>
-    <DepthPicker value={progenyDepth} onChange={(v) => (progenyDepth = v)} />
+    <div class="depth-pickers">
+      <DepthPicker
+        label="Up"
+        options={DEPTH_OPTIONS}
+        value={ancestryDepth}
+        onChange={(v) => (ancestryDepth = v)}
+      />
+      <DepthPicker
+        label="Down"
+        options={DEPTH_OPTIONS}
+        value={progenyDepth}
+        onChange={(v) => (progenyDepth = v)}
+      />
+    </div>
   </div>
   <div class="main">
     <TreeView
       data={data.model}
       centerId={data.personId}
       {progenyDepth}
+      {ancestryDepth}
       onSelectPerson={selectPerson}
+      onExpandDepth={expandDepth}
     />
 
     <!-- Desktop: sidebar with a small floating corner toggle. -->
@@ -110,6 +137,12 @@
     display: flex;
     flex-direction: column;
     height: 100dvh;
+  }
+  .depth-pickers {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
   }
   .toolbar {
     display: flex;
