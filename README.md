@@ -2,7 +2,8 @@
 
 A family-tree visualization site — a SvelteKit SPA that reads a JSON
 dataset at runtime and renders an interactive, navigable tree (search, a
-per-person detail panel, source citations, marriages, name variants).
+per-person detail panel, source citations, marriages, name variants, and
+an ancestor birthplace heatmap "Map" overlay).
 Static export via `adapter-static`, so it deploys anywhere that serves
 static files.
 
@@ -50,6 +51,16 @@ Outputs a static site to `build/`.
    have anyone to redirect to.
 
 3. Deploy — see "Deploy" below.
+
+To use the Map overlay, resolve birth-place coordinates into
+`static/data/places.json` (schema in `docs/schema.md`):
+
+    npm run geocode
+
+Run it again after adding people with new birth places. It looks places up
+via OpenStreetMap's Nominatim, so it needs network access (about one
+request per second). Without `places.json` the app still works; the map
+just shows a hint. Map tiles are (c) OpenStreetMap contributors.
 
 After any dataset edit:
 

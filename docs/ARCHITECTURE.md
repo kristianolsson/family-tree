@@ -69,6 +69,39 @@ actually has a recorded date, so undated/unformalized unions don't show a
 bare "unknown" row. A remarried person can show more than one such row,
 one per union with a date.
 
+## Ancestor map
+
+A "Map" button on the person page opens `MapOverlay.svelte`, a heatmap of
+the selected person's ancestors' birthplaces.
+
+- `src/lib/data/ancestorMap.js` — pure functions: `collectAncestors()`
+  walks the model's `childFamilyOf` links, and `buildHeatData()` groups
+  those ancestors' birth places into weighted points using `places`.
+- `src/lib/components/MapOverlay.svelte` — the overlay shell (title, close,
+  empty-state hint when there are no coordinates).
+- `src/lib/components/MapView.svelte` — the Leaflet map and `leaflet.heat`
+  layer, with OpenStreetMap tiles. Heat intensity is scaled to the busiest
+  place (`max` = the largest group count).
+- `scripts/geocode-places.mjs` (`npm run geocode`) — fills `places.json`.
+
+Data flow: `static/data/places.json` -> `loadDataset.js` (fetched at runtime
+like the other data files; a missing file yields an empty map and the
+hint, the app still works) -> `person/[id]/+page.svelte` -> `MapOverlay`.
+`places.json` is documented in `docs/schema.md`.
+
+The overlay is lazy-loaded: the page `import()`s `MapOverlay.svelte` on
+first click, so Leaflet stays out of the initial bundle. Leaflet and
+`leaflet.heat` are imported only in `MapView.svelte` — the same kind of
+seam as `family-chart` in `TreeView`; verify with `grep -rli leaflet src/` (should list only `MapView.svelte`).
+
+Geocoding: a transient network error leaves a place uncached, so the next
+run retries it; a genuine no-result is cached as `unresolved` and retried
+only with `--retry`. `places.json` is user-owned data (kept by `npm run
+sync` under the existing `static/data/` rule); `geocode-places.mjs` is
+template-owned. The `add-data` skill runs geocode, and the validator flags
+birth places missing from `places.json`. The Leaflet rendering is covered
+by tests and the build, not by automated visual checks.
+
 ## Routing
 
 `src/routes/person/[id]/+page.js` loads the dataset, builds the model, and
