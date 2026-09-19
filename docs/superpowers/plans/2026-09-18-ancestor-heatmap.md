@@ -13,12 +13,12 @@
 ## Global Constraints
 
 - Template repo is public: NO real names/places/counts from any real dataset. Sample data must be fictional.
-- Existing code style: 2-space indent, single quotes, no semicolon-free; ES modules; comments sparse.
+- Existing code style: 2-space indent, single quotes, semicolons; ES modules; comments sparse.
 - All `leaflet` / `leaflet.heat` imports only inside `src/lib/components/MapView.svelte`.
 - `static/data/places.json` is data (olsson keeps its own); code files are template-owned.
 - The app must still work when `places.json` is missing (older installs): treat as `{}`.
 - Do not push; commit locally per task. Commit messages: no attribution lines.
-- Run `npm test` and `npm run build` must pass at the end of every task.
+- `npm test` and `npm run build` must pass at the end of every task.
 
 ---
 
