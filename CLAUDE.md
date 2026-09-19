@@ -36,6 +36,10 @@ below means whatever you've put in `static/data/` in your own copy.
 ## Workflow
 
 - Run `npm test` and `npm run build` before considering any change done.
+- After a user-visible change lands in this template repo, republish the
+  live demo with `npm run deploy:demo` (builds with `BASE_PATH=/family-tree`
+  and pushes to `gh-pages`). Template-only: it doesn't apply to
+  `olsson-family-tree`.
 - `python3 scripts/validate_dataset.py --dir static/data` checks
   referential integrity (orphan references, duplicate family records,
   missing image files, unflagged birth-date collisions, birth places
