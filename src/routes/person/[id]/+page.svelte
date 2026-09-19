@@ -21,6 +21,13 @@
   let progenyDepth = $state(userConfig.DEFAULT_PROGENY_DEPTH ?? DEFAULT_PROGENY_DEPTH);
   let ancestryDepth = $state(userConfig.DEFAULT_ANCESTRY_DEPTH ?? DEFAULT_ANCESTRY_DEPTH);
   let panelOpen = $state(true);
+  let MapOverlay = $state(null);
+  let mapOpen = $state(false);
+
+  async function openMap() {
+    MapOverlay ??= (await import('$lib/components/MapOverlay.svelte')).default;
+    mapOpen = true;
+  }
 
   function selectPerson(id) {
     goto(`${base}/person/${id}`);
@@ -77,6 +84,7 @@
         value={progenyDepth}
         onChange={(v) => (progenyDepth = v)}
       />
+      <button type="button" class="map-btn" onclick={openMap}>Map</button>
     </div>
   </div>
   <div class="main">
@@ -135,6 +143,14 @@
       {/if}
     </div>
   </div>
+  {#if mapOpen && MapOverlay}
+    <MapOverlay
+      model={data.model}
+      personId={data.personId}
+      places={data.places}
+      onClose={() => (mapOpen = false)}
+    />
+  {/if}
 </div>
 
 <style>
@@ -148,6 +164,19 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem 1rem;
+  }
+  .map-btn {
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+  }
+  .map-btn:hover {
+    background: var(--bg);
   }
   .toolbar {
     display: flex;

@@ -15,7 +15,9 @@
     "prepare": "svelte-kit sync || echo ''"
   },
   "dependencies": {
-    "family-chart": "^0.9.0"
+    "family-chart": "^0.9.0",
+    "leaflet": "^1.9.4",
+    "leaflet.heat": "^0.2.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.10",
