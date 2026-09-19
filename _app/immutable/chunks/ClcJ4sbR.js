@@ -1,1 +1,0 @@
-var e=`P0006`,t=[1,2,3,`all`];export{t as n,e as t};
