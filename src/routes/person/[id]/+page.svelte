@@ -7,6 +7,7 @@
   import DepthPicker from '$lib/components/DepthPicker.svelte';
   import { buildSearchIndex } from '$lib/data/search.js';
   import { primaryName } from '$lib/data/formatDate.js';
+  import * as userConfig from '$lib/config.js';
   import {
     DEFAULT_PROGENY_DEPTH,
     DEFAULT_ANCESTRY_DEPTH,
@@ -17,8 +18,8 @@
 
   let searchIndex = $derived(buildSearchIndex(data.model.peopleById));
   let person = $derived(data.model.peopleById.get(data.personId));
-  let progenyDepth = $state(DEFAULT_PROGENY_DEPTH);
-  let ancestryDepth = $state(DEFAULT_ANCESTRY_DEPTH);
+  let progenyDepth = $state(userConfig.DEFAULT_PROGENY_DEPTH ?? DEFAULT_PROGENY_DEPTH);
+  let ancestryDepth = $state(userConfig.DEFAULT_ANCESTRY_DEPTH ?? DEFAULT_ANCESTRY_DEPTH);
   let panelOpen = $state(true);
 
   function selectPerson(id) {

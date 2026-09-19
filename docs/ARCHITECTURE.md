@@ -38,7 +38,9 @@ non-id change the template made to it. Splitting the file means the
 template can freely add or change its own constants, while your
 `DEFAULT_PERSON_ID` is never at risk of being overwritten. New
 template-wide constants belong in `config-template.js`; anything
-genuinely per-installation belongs in `config.js`.
+genuinely per-installation belongs in `config.js`. `config.js` may also
+optionally export `DEFAULT_PROGENY_DEPTH` / `DEFAULT_ANCESTRY_DEPTH` to
+override the template's defaults.
 
 ## Source images
 
@@ -103,7 +105,9 @@ Leaving either unset shows every generation in that direction, which can
 make the tree very tall/wide when centered on someone with many
 descendants or a deeply-recorded ancestry. `person/[id]/+page.svelte`
 holds both as local `$state` (`DEFAULT_PROGENY_DEPTH = 2`,
-`DEFAULT_ANCESTRY_DEPTH = 5`, from `src/lib/config-template.js` — see
+`DEFAULT_ANCESTRY_DEPTH = 5`, from `src/lib/config-template.js`; either can
+be overridden by exporting the same name from your own `src/lib/config.js`
+— see
 "Two config files" below), passed into `TreeView`'s
 `progenyDepth`/`ancestryDepth` props (which call
 `setProgenyDepth`/`setAncestryDepth`, using `undefined` for the `'all'`
