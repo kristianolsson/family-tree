@@ -79,10 +79,11 @@ The `build/` output is plain static files — any static host works:
     npm run sync
 
 Fetches and merges `upstream/main`, resolving conflicts automatically
-(your data and `config.js` always win, template docs/skill updates always
-win), then runs tests/build before committing. See CLAUDE.md's "Syncing
-with the family-tree template" section for exactly what it does and how
-to resolve anything it can't.
+(your data and `config.js`'s `DEFAULT_PERSON_ID` always win; template
+docs, skill files, and `config-template.js`'s constants always win), then
+runs tests/build before committing. See CLAUDE.md's "Syncing with the
+family-tree template" section for exactly what it does and how to resolve
+anything it can't.
 
 ## Architecture
 

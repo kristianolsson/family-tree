@@ -7,7 +7,8 @@ const THEIRS_PATHS = [
   'CLAUDE.md',
   'docs/ARCHITECTURE.md',
   'docs/schema.md',
-  '.claude/skills/add-data/SKILL.md'
+  '.claude/skills/add-data/SKILL.md',
+  'src/lib/config-template.js'
 ];
 
 const OURS_EXACT = ['src/lib/config.js'];

@@ -70,14 +70,17 @@ hand, or want to understand what the script did):
 Conflicts resolve per-path, mechanically:
 
 - Docs and skill files (`README.md`, `CLAUDE.md`, `docs/ARCHITECTURE.md`,
-  `docs/schema.md`, `.claude/skills/add-data/SKILL.md`) — take **theirs**
-  (the template's version wins outright — that's also how future updates
-  to this very section arrive):
+  `docs/schema.md`, `.claude/skills/add-data/SKILL.md`) and
+  `src/lib/config-template.js` (template-owned constants — see
+  `docs/ARCHITECTURE.md`'s "Two config files") — take **theirs** (the
+  template's version wins outright — that's also how future updates to
+  this very section arrive):
 
       git checkout --theirs <path> && git add <path>
 
-- `src/lib/config.js` — take **ours** (your `DEFAULT_PERSON_ID` should
-  point at your own tree, not the template's sample data):
+- `src/lib/config.js` — take **ours** (it holds only your
+  `DEFAULT_PERSON_ID`, which should point at your own tree, not the
+  template's sample data):
 
       git checkout --ours src/lib/config.js && git add src/lib/config.js
 
@@ -96,4 +99,6 @@ Then verify and finish the merge:
 improvement, skill update) as a commit in the `family-tree` template repo
 first, then pull it into your own copy via `npm run sync` — never edit it
 directly in your own repo and never back-port it by hand. `static/data/*`
-and `src/lib/config.js` are the only files meant to permanently diverge.
+and `src/lib/config.js` are the only files meant to permanently diverge —
+`src/lib/config-template.js` is not: it's template-owned, just like this
+file.

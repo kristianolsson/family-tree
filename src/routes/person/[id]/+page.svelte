@@ -7,7 +7,11 @@
   import DepthPicker from '$lib/components/DepthPicker.svelte';
   import { buildSearchIndex } from '$lib/data/search.js';
   import { primaryName } from '$lib/data/formatDate.js';
-  import { DEFAULT_PROGENY_DEPTH, DEFAULT_ANCESTRY_DEPTH, DEPTH_OPTIONS } from '$lib/config.js';
+  import {
+    DEFAULT_PROGENY_DEPTH,
+    DEFAULT_ANCESTRY_DEPTH,
+    DEPTH_OPTIONS
+  } from '$lib/config-template.js';
 
   let { data } = $props();
 

@@ -24,6 +24,22 @@ matches a typed query against every name variant a person has, labeling
 each match with its birth year (`formatBirthYear`) to disambiguate two
 different people who happen to share a name.
 
+## Two config files
+
+`src/lib/config.js` holds only `DEFAULT_PERSON_ID` — the one setting
+that's genuinely yours, never the template's. `src/lib/config-template.js`
+holds every other configurable constant (`DEFAULT_PROGENY_DEPTH`,
+`DEFAULT_ANCESTRY_DEPTH`, `DEPTH_OPTIONS`, and any future ones) and is
+template-owned: `npm run sync` always takes the template's version of it,
+the same as `README.md`/`CLAUDE.md`/etc. Earlier, all of these constants
+lived in one `config.js`, and syncing had to fall back to keeping your
+whole file untouched on any conflict there — which silently discarded any
+non-id change the template made to it. Splitting the file means the
+template can freely add or change its own constants, while your
+`DEFAULT_PERSON_ID` is never at risk of being overwritten. New
+template-wide constants belong in `config-template.js`; anything
+genuinely per-installation belongs in `config.js`.
+
 ## Source images
 
 `static/data/images/` holds each source's photo, named by source id
@@ -87,14 +103,15 @@ Leaving either unset shows every generation in that direction, which can
 make the tree very tall/wide when centered on someone with many
 descendants or a deeply-recorded ancestry. `person/[id]/+page.svelte`
 holds both as local `$state` (`DEFAULT_PROGENY_DEPTH = 2`,
-`DEFAULT_ANCESTRY_DEPTH = 5`, from `src/lib/config.js`), passed into
-`TreeView`'s `progenyDepth`/`ancestryDepth` props (which call
+`DEFAULT_ANCESTRY_DEPTH = 5`, from `src/lib/config-template.js` — see
+"Two config files" below), passed into `TreeView`'s
+`progenyDepth`/`ancestryDepth` props (which call
 `setProgenyDepth`/`setAncestryDepth`, using `undefined` for the `'all'`
 option) and into two `DepthPicker.svelte` instances (labeled "Up" and
 "Down"), a small one-click `1 / 2 / 3 / 5 / 10 / All` control shared by
-both directions (`DEPTH_OPTIONS` in `config.js`). This is a session-only
-UI preference, not part of the URL — it's independent of which person is
-centered.
+both directions (`DEPTH_OPTIONS`, also in `config-template.js`). This is
+a session-only UI preference, not part of the URL — it's independent of
+which person is centered.
 
 Every rendered card carries `all_rels_displayed` (false when a
 parent/spouse/child of that person is cut off by the current depth limit)

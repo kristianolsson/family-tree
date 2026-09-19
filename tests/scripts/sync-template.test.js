@@ -20,6 +20,10 @@ describe('classifyConflict', () => {
     expect(classifyConflict('.claude/skills/add-data/SKILL.md')).toBe('theirs');
   });
 
+  it('classifies the template-owned config constants file as theirs', () => {
+    expect(classifyConflict('src/lib/config-template.js')).toBe('theirs');
+  });
+
   it('classifies config.js and static/data paths as ours', () => {
     expect(classifyConflict('src/lib/config.js')).toBe('ours');
     expect(classifyConflict('static/data/people.json')).toBe('ours');
