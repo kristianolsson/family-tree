@@ -20,11 +20,24 @@ export function buildHeatData(model, ancestorIds, places = {}) {
     const coords = place ? places[place] : null;
     if (!coords || coords.lat == null || coords.lng == null) continue;
     placed += 1;
-    const group = groups.get(place) || { place, lat: coords.lat, lng: coords.lng, count: 0 };
+    // Places pinned at identical coordinates (e.g. several villages resolved to
+    // their parish) merge into one group so their circles don't pile up.
+    const key = `${coords.lat},${coords.lng}`;
+    const group = groups.get(key) || { lat: coords.lat, lng: coords.lng, count: 0, places: new Map() };
     group.count += 1;
-    groups.set(place, group);
+    group.places.set(place, (group.places.get(place) || 0) + 1);
+    groups.set(key, group);
   }
-  return { total: ancestorIds.length, placed, groups: [...groups.values()] };
+  return {
+    total: ancestorIds.length,
+    placed,
+    groups: [...groups.values()].map((g) => ({
+      lat: g.lat,
+      lng: g.lng,
+      count: g.count,
+      places: [...g.places].map(([place, count]) => ({ place, count })).sort((a, b) => b.count - a.count)
+    }))
+  };
 }
 
 export function markerRadius(count) {

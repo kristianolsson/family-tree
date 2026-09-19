@@ -56,8 +56,31 @@ describe('buildHeatData', () => {
     expect(r.total).toBe(5);
     expect(r.placed).toBe(3);
     expect(r.groups).toEqual([
-      { place: 'X, Land', lat: 1, lng: 2, count: 2 },
-      { place: 'Y, Land', lat: 3, lng: 4, count: 1 }
+      { lat: 1, lng: 2, count: 2, places: [{ place: 'X, Land', count: 2 }] },
+      { lat: 3, lng: 4, count: 1, places: [{ place: 'Y, Land', count: 1 }] }
+    ]);
+  });
+
+  it('merges places pinned at identical coordinates into one group, busiest first', () => {
+    const shared = { lat: 5, lng: 6, status: 'auto' };
+    const ppl = [person('A', 'P1'), person('B', 'P2'), person('C', 'P2'), person('D', 'P3')];
+    const r = buildHeatData(model(ppl, []), ['A', 'B', 'C', 'D'], {
+      P1: shared,
+      P2: { ...shared },
+      P3: { lat: 7, lng: 8, status: 'auto' }
+    });
+    expect(r.placed).toBe(4);
+    expect(r.groups).toEqual([
+      {
+        lat: 5,
+        lng: 6,
+        count: 3,
+        places: [
+          { place: 'P2', count: 2 },
+          { place: 'P1', count: 1 }
+        ]
+      },
+      { lat: 7, lng: 8, count: 1, places: [{ place: 'P3', count: 1 }] }
     ]);
   });
 

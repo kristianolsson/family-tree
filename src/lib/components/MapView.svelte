@@ -32,14 +32,31 @@
 
       // Biggest first so small circles stay clickable on top of large ones.
       for (const g of [...groups].sort((a, b) => b.count - a.count)) {
-        const text = `${g.place} — ${g.count} ancestor${g.count === 1 ? '' : 's'}`;
+        const plural = (n) => `${n} ancestor${n === 1 ? '' : 's'}`;
+        // Text nodes only, so place names are never parsed as HTML.
+        const popup = document.createElement('div');
+        if (g.places.length === 1) {
+          popup.textContent = `${g.places[0].place} — ${plural(g.count)}`;
+        } else {
+          const title = document.createElement('strong');
+          title.textContent = plural(g.count);
+          const list = document.createElement('ul');
+          list.style.margin = '0.25rem 0 0';
+          list.style.paddingLeft = '1.1rem';
+          for (const { place, count } of g.places) {
+            const item = document.createElement('li');
+            item.textContent = `${place} (${count})`;
+            list.append(item);
+          }
+          popup.append(title, list);
+        }
         L.circleMarker([g.lat, g.lng], {
           radius: markerRadius(g.count),
           weight: 1,
           fillOpacity: 0.35
         })
           .addTo(map)
-          .bindPopup(document.createTextNode(text));
+          .bindPopup(popup);
       }
 
       if (groups.length > 0) {

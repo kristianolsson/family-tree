@@ -77,6 +77,8 @@ the selected person's ancestors' birthplaces.
 - `src/lib/data/ancestorMap.js` — pure functions: `collectAncestors()`
   walks the model's `childFamilyOf` links, and `buildHeatData()` groups
   those ancestors' birth places into weighted points using `places`.
+  Places pinned at identical coordinates merge into one point (the popup
+  lists the places it covers).
 - `src/lib/components/MapOverlay.svelte` — the overlay shell (title, close,
   empty-state hint when there are no coordinates).
 - `src/lib/components/MapView.svelte` — the Leaflet map and `leaflet.heat`
