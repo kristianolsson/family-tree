@@ -177,6 +177,17 @@ stepping the corresponding depth to the next value in `DEPTH_OPTIONS`.
 `family-chart` has no notion of per-branch depth, so this always expands the
 whole tree one step in that direction, not just the clicked branch.
 
+`TreeView.svelte` also makes edges hoverable and selectable so a long line
+can be followed. `family-chart` draws each edge as a 1px `path.link` and
+re-renders it on every update, so a `MutationObserver` mirrors each one with
+an invisible 14px-wide `path.link-hit` in a sibling group placed below the
+cards, and re-applies `link-hover` / `link-selected` classes to the real
+paths. Hover and selection are keyed by `linkGroupKey()`
+(`treeViewAdapter.js`), which groups a couple's spouse line with all of
+their parent/child lines, so the whole family unit highlights together. One
+group is selected at a time; clicking it again or empty canvas clears it,
+and it clears itself if the group leaves the rendered tree.
+
 ## Responsive detail panel
 
 `person/[id]/+page.svelte` renders `PersonPanel` twice — once inside

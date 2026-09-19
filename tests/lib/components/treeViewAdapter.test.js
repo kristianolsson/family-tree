@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildFamilyTreeModel } from '../../../src/lib/data/adapter.js';
-import { toFamilyChartNodes } from '../../../src/lib/components/treeViewAdapter.js';
+import { toFamilyChartNodes, linkGroupKey } from '../../../src/lib/components/treeViewAdapter.js';
 import { people, families, sources } from '../../fixtures/sampleDataset.js';
 
 describe('toFamilyChartNodes', () => {
@@ -41,5 +41,23 @@ describe('toFamilyChartNodes', () => {
   it('omits the gender key entirely when sex is null, rather than guessing', () => {
     const p7 = byId.get('P7');
     expect(p7.data.gender).toBeUndefined();
+  });
+});
+
+describe('linkGroupKey', () => {
+  const a = { tid: 'a' };
+  const b = { tid: 'b' };
+  const kid = { tid: 'k' };
+
+  it('gives a couple’s spouse line and child lines the same key', () => {
+    const spouse = { spouse: true, source: a, target: b };
+    const down = { source: [b, a], target: kid };
+    const up = { source: kid, target: [a, b] };
+    expect(linkGroupKey(down)).toBe(linkGroupKey(spouse));
+    expect(linkGroupKey(up)).toBe(linkGroupKey(spouse));
+  });
+
+  it('handles a single parent', () => {
+    expect(linkGroupKey({ source: [a, a], target: kid })).toBe('a');
   });
 });

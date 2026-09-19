@@ -1,7 +1,7 @@
 <script>
   import * as f3 from 'family-chart';
   import 'family-chart/styles/family-chart.css';
-  import { toFamilyChartNodes } from './treeViewAdapter.js';
+  import { toFamilyChartNodes, linkGroupKey } from './treeViewAdapter.js';
 
   let {
     data,
@@ -15,6 +15,98 @@
   let container;
   let chart;
   let hasRendered = false;
+
+  // Edge hover/select. family-chart draws each edge as a 1px <path.link>
+  // that it re-renders (and animates) on every update, so we mirror each one
+  // with an invisible wide <path.link-hit> in a sibling group (below the
+  // cards) to make edges easy to hover and click, and re-apply the
+  // highlight classes whenever the paths change. Hover/selection are keyed
+  // by linkGroupKey so a whole family unit lights up together; only one
+  // group is selected at a time.
+  const HIT_NS = 'http://www.w3.org/2000/svg';
+  let selectedKey = null;
+  let hoverKey = null;
+  let hitGroup;
+  let hitByLink = new Map();
+
+  function syncLinkHits() {
+    const linksView = container?.querySelector('.links_view');
+    if (!linksView) return;
+    if (!hitGroup) {
+      hitGroup = document.createElementNS(HIT_NS, 'g');
+      hitGroup.setAttribute('class', 'link_hits');
+      linksView.after(hitGroup);
+    }
+    const seen = new Set();
+    for (const path of linksView.querySelectorAll('path.link')) {
+      const link = path.__data__;
+      if (!link) continue;
+      seen.add(link.id);
+      const key = linkGroupKey(link);
+      let hit = hitByLink.get(link.id);
+      if (!hit) {
+        hit = document.createElementNS(HIT_NS, 'path');
+        hit.setAttribute('class', 'link-hit');
+        hitGroup.appendChild(hit);
+        hitByLink.set(link.id, hit);
+      }
+      hit.dataset.group = key;
+      hit.setAttribute('d', path.getAttribute('d') || '');
+      path.classList.toggle('link-hover', key === hoverKey);
+      path.classList.toggle('link-selected', key === selectedKey);
+    }
+    for (const [id, hit] of hitByLink) {
+      if (!seen.has(id)) {
+        hit.remove();
+        hitByLink.delete(id);
+      }
+    }
+    if (selectedKey && ![...hitByLink.values()].some((h) => h.dataset.group === selectedKey)) {
+      selectedKey = null;
+    }
+  }
+
+  function hitGroupOf(event) {
+    const hit = event.target.closest?.('.link-hit');
+    return hit ? hit.dataset.group : null;
+  }
+
+  function onLinkPointer(event) {
+    const key = event.type === 'pointerout' ? null : hitGroupOf(event);
+    if (key === hoverKey) return;
+    hoverKey = key;
+    syncLinkHits();
+  }
+
+  function onLinkClick(event) {
+    const key = hitGroupOf(event);
+    if (key) selectedKey = key === selectedKey ? null : key;
+    else if (event.target.closest('.card_cont, .depth-expand-btn')) return;
+    else selectedKey = null;
+    syncLinkHits();
+  }
+
+  $effect(() => {
+    if (!container) return;
+    // Paths are created and animated by family-chart; keep the hit paths
+    // (and highlight classes) in step with every change to them.
+    const observer = new MutationObserver(syncLinkHits);
+    observer.observe(container, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['d']
+    });
+    container.addEventListener('pointerover', onLinkPointer);
+    container.addEventListener('pointerout', onLinkPointer);
+    container.addEventListener('click', onLinkClick);
+    return () => {
+      observer.disconnect();
+      container.removeEventListener('pointerover', onLinkPointer);
+      container.removeEventListener('pointerout', onLinkPointer);
+      container.removeEventListener('click', onLinkClick);
+    };
+  });
 
   $effect(() => {
     if (!container) return;
@@ -108,6 +200,22 @@
   }
   .tree-view :global(.link) {
     stroke: var(--ink-dim);
+  }
+  .tree-view :global(.link.link-hover) {
+    stroke: var(--accent);
+    stroke-width: 2px;
+  }
+  .tree-view :global(.link.link-selected) {
+    stroke: var(--accent);
+    stroke-width: 4px;
+  }
+  /* Invisible, wide hit target mirroring each edge (see syncLinkHits). */
+  .tree-view :global(.link-hit) {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 14px;
+    pointer-events: stroke;
+    cursor: pointer;
   }
   /* Centered on a card's top (up) or bottom (down) edge -- .card itself is
      `position: relative` (family-chart's own CSS). */
