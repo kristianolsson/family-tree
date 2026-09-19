@@ -57,13 +57,14 @@ describe('geocodePlaces', () => {
     const r = await geocodePlaces({ people: [p('Z')], places, lookup: async () => null, sleep });
     expect(r.unresolved).toEqual(['Z']);
   });
-  it('treats a lookup error as unresolved without aborting', async () => {
+  it('leaves a place uncached on a lookup error, reports it, and keeps going', async () => {
     const lookup = async (place) => {
       if (place === 'A') throw new Error('boom');
       return { lat: 1, lng: 2 };
     };
     const r = await geocodePlaces({ people: [p('A'), p('B')], places: {}, lookup, sleep });
-    expect(r.places.A.status).toBe('unresolved');
+    expect(r.places.A).toBeUndefined();
+    expect(r.unresolved).toEqual(['A']);
     expect(r.places.B.status).toBe('auto');
   });
 });

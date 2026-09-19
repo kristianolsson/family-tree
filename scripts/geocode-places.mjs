@@ -43,7 +43,10 @@ export async function geocodePlaces({ people, places, lookup, retry = false, sle
     try {
       coords = await lookup(place);
     } catch (err) {
+      // Transient failure: leave the place uncached so the next run retries it.
       console.warn(err.message);
+      unresolved.push(place);
+      continue;
     }
     if (coords) {
       result[place] = { lat: coords.lat, lng: coords.lng, status: 'auto' };
