@@ -18,7 +18,9 @@
     </button>
   </header>
   <div class="map-body">
-    {#if heat.placed === 0}
+    {#if heat.total === 0}
+      <p class="map-empty">No known ancestors for this person.</p>
+    {:else if heat.placed === 0}
       <p class="map-empty">No birthplaces with coordinates yet — run <code>npm run geocode</code>.</p>
     {:else}
       <MapView groups={heat.groups} />

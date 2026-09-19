@@ -8,6 +8,7 @@ export function collectAncestors(model, personId) {
     const family = model.familiesById.get(model.childFamilyOf.get(id));
     for (const parentId of family?.partners || []) stack.push(parentId);
   }
+  seen.delete(personId);
   return [...seen];
 }
 

@@ -28,7 +28,7 @@ showing where ancestors cluster. Uses all ancestors regardless of the tree's dep
 - A "Map" button in the person page toolbar opens a full-viewport overlay (close button, Esc).
   The tree underneath keeps its state.
 - `collectAncestors(personId, people)` is a pure function that walks `rels.parents` to the top,
-  ignores the depth limit, includes the selected person, and is cycle-safe.
+  ignores the depth limit, excludes the selected person (only ancestors count), and is cycle-safe.
 - `placesToPoints(ancestors, places)` maps birth places to `[lat, lng]`, one point per ancestor,
   and skips missing or unresolved places. The overlay shows "N of M ancestors placed".
 - `MapView.svelte` uses Leaflet with OpenStreetMap tiles (attribution shown) and `leaflet.heat`,

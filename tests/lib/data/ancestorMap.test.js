@@ -20,17 +20,17 @@ describe('collectAncestors', () => {
     { id: 'F2', partners: ['C', 'D'], children: ['E'] }
   ];
 
-  it('walks all the way up and includes the person', () => {
-    expect(collectAncestors(model(people, families), 'E').sort()).toEqual(['A', 'B', 'C', 'D', 'E']);
+  it('walks all the way up and excludes the person', () => {
+    expect(collectAncestors(model(people, families), 'E').sort()).toEqual(['A', 'B', 'C', 'D']);
   });
 
-  it('returns just the person when there are no parents', () => {
-    expect(collectAncestors(model(people, families), 'A')).toEqual(['A']);
+  it('returns nothing when there are no parents', () => {
+    expect(collectAncestors(model(people, families), 'A')).toEqual([]);
   });
 
   it('ignores null partners', () => {
     const fams = [{ id: 'F1', partners: ['A', null], children: ['C'] }];
-    expect(collectAncestors(model(people, fams), 'C').sort()).toEqual(['A', 'C']);
+    expect(collectAncestors(model(people, fams), 'C').sort()).toEqual(['A']);
   });
 
   it('is cycle-safe', () => {
@@ -38,7 +38,7 @@ describe('collectAncestors', () => {
       { id: 'F1', partners: ['A'], children: ['B'] },
       { id: 'F2', partners: ['B'], children: ['A'] }
     ];
-    expect(collectAncestors(model(people, fams), 'A').sort()).toEqual(['A', 'B']);
+    expect(collectAncestors(model(people, fams), 'A').sort()).toEqual(['B']);
   });
 });
 

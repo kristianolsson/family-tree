@@ -23,7 +23,7 @@ const places = { X: { lat: 1, lng: 2, status: 'auto' } };
 describe('MapOverlay', () => {
   it('shows how many ancestors were placed', () => {
     render(MapOverlay, { props: { model, personId: 'C', places, onClose: vi.fn() } });
-    expect(screen.getByText(/2 of 3 ancestors placed/)).toBeInTheDocument();
+    expect(screen.getByText(/2 of 2 ancestors placed/)).toBeInTheDocument();
   });
   it('closes via the button and Escape', async () => {
     const onClose = vi.fn();
@@ -36,5 +36,9 @@ describe('MapOverlay', () => {
     render(MapOverlay, { props: { model, personId: 'C', places: {}, onClose: vi.fn() } });
     expect(screen.getByText(/npm run geocode/)).toBeInTheDocument();
     expect(screen.queryByTestId('stub-map')).not.toBeInTheDocument();
+  });
+  it('says so when the person has no known ancestors', () => {
+    render(MapOverlay, { props: { model, personId: 'A', places, onClose: vi.fn() } });
+    expect(screen.getByText(/no known ancestors/i)).toBeInTheDocument();
   });
 });
