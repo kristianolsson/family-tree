@@ -6,19 +6,17 @@
   }
 </script>
 
-<div class="depth-picker" role="group" aria-label={label}>
+<label class="depth-picker">
   <span class="depth-picker-label">{label}:</span>
-  {#each options as option (option)}
-    <button
-      type="button"
-      class:active={option === value}
-      aria-pressed={option === value}
-      onclick={() => onChange(option)}
-    >
-      {optionLabel(option)}
-    </button>
-  {/each}
-</div>
+  <select
+    value={String(value)}
+    onchange={(e) => onChange(options.find((o) => String(o) === e.currentTarget.value))}
+  >
+    {#each options as option (option)}
+      <option value={String(option)}>{optionLabel(option)}</option>
+    {/each}
+  </select>
+</label>
 
 <style>
   .depth-picker {
@@ -31,8 +29,8 @@
     color: var(--ink-dim);
     margin-right: 0.25rem;
   }
-  button {
-    padding: 0.25rem 0.6rem;
+  select {
+    padding: 0.25rem 0.4rem;
     border: 1px solid var(--rule);
     border-radius: 4px;
     background: var(--bg);
@@ -40,10 +38,5 @@
     font-family: inherit;
     font-size: inherit;
     cursor: pointer;
-  }
-  button.active {
-    background: var(--accent);
-    color: var(--bg);
-    border-color: var(--accent);
   }
 </style>

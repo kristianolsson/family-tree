@@ -108,22 +108,22 @@ holds both as local `$state` (`DEFAULT_PROGENY_DEPTH = 2`,
 `progenyDepth`/`ancestryDepth` props (which call
 `setProgenyDepth`/`setAncestryDepth`, using `undefined` for the `'all'`
 option) and into two `DepthPicker.svelte` instances (labeled "Up" and
-"Down"), a small one-click `1 / 2 / 3 / 5 / 10 / All` control shared by
+"Down"), a small `<select>` (`1`–`10`, `All`) shared by
 both directions (`DEPTH_OPTIONS`, also in `config-template.js`). This is
 a session-only UI preference, not part of the URL — it's independent of
 which person is centered.
 
-Every rendered card carries `all_rels_displayed` (false when a
-parent/spouse/child of that person is cut off by the current depth limit)
-and `is_ancestry` (true on the ancestor side) — both computed by
-`family-chart` itself. `TreeView.svelte` uses `card.setOnCardUpdate()` to
-overlay a small "+" button on any such card, positioned via the card's own
-`position: relative`; clicking it (stopping propagation so it doesn't also
-select that person) calls `onExpandDepth('up' | 'down')`, which
-`person/[id]/+page.svelte` handles by stepping the corresponding depth to
-the next value in `DEPTH_OPTIONS`. `family-chart` has no notion of
-per-branch depth, so this always expands the whole tree one step in that
-direction, not just the clicked branch.
+`TreeView.svelte` uses `card.setOnCardUpdate()` to overlay a small "+"
+button on boundary cards only: an ancestor card whose parents are cut off
+by the depth limit (badge centered on its top edge, where the parent line
+would leave), or a non-spouse descendant card whose children are cut off
+(centered on its bottom edge). Hidden-ness is checked against the ids in
+the currently rendered tree (`chart.store.getTree()`). Clicking it (stopping
+propagation so it doesn't also select that person) calls
+`onExpandDepth('up' | 'down')`, which `person/[id]/+page.svelte` handles by
+stepping the corresponding depth to the next value in `DEPTH_OPTIONS`.
+`family-chart` has no notion of per-branch depth, so this always expands the
+whole tree one step in that direction, not just the clicked branch.
 
 ## Responsive detail panel
 

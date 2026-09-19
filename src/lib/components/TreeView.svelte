@@ -25,20 +25,27 @@
       const card = chart.setCardHtml();
       card.setCardDisplay([['first name', 'last name'], ['birthday']]);
       card.setOnCardClick((_e, d) => onSelectPerson(d.data.id));
-      // family-chart marks every rendered card with `all_rels_displayed: false`
-      // when a parent/spouse/child of that person is hidden by the current
-      // depth limit -- and `is_ancestry: true` when the card is on the
-      // ancestor side. There's no per-branch depth in family-chart, so the
-      // "+" always bumps the whole tree's up/down depth by one step.
+      // The "+" goes only on boundary cards: an ancestor whose parents are
+      // cut off by the depth limit (badge on top, where the parent line
+      // would leave), or a non-spouse descendant whose children are cut off
+      // (badge on bottom). family-chart has no per-branch depth, so the
+      // "+" bumps the whole tree's up/down depth by one step.
       card.setOnCardUpdate(function (d) {
         const existingButton = this.querySelector('.depth-expand-btn');
         if (existingButton) existingButton.remove();
-        if (d.all_rels_displayed !== false) return;
         if (d.data.to_add || d.data.unknown || d.data._new_rel_data) return;
-        const direction = d.is_ancestry ? 'up' : 'down';
+        const displayed = new Set(chart.store.getTree().data.map((t) => t.data.id));
+        const hidden = (ids) => (ids || []).some((id) => id && !displayed.has(id));
+        let direction;
+        if (d.is_ancestry) {
+          if (hidden(d.data.rels.parents)) direction = 'up';
+        } else if (!d.spouse && hidden(d.data.rels.children)) {
+          direction = 'down';
+        }
+        if (!direction) return;
         const button = document.createElement('button');
         button.type = 'button';
-        button.className = 'depth-expand-btn';
+        button.className = `depth-expand-btn ${direction}`;
         button.textContent = '+';
         button.setAttribute(
           'aria-label',
@@ -102,13 +109,12 @@
   .tree-view :global(.link) {
     stroke: var(--ink-dim);
   }
-  /* Overlaid on any card whose family-chart `all_rels_displayed` is false --
-     .card itself is `position: relative` (family-chart's own CSS), so this
-     anchors to the card's corner regardless of card size/style. */
+  /* Centered on a card's top (up) or bottom (down) edge -- .card itself is
+     `position: relative` (family-chart's own CSS). */
   .tree-view :global(.depth-expand-btn) {
     position: absolute;
-    top: -8px;
-    right: -8px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 22px;
     height: 22px;
     padding: 0;
@@ -120,6 +126,12 @@
     line-height: 1;
     cursor: pointer;
     z-index: 3;
+  }
+  .tree-view :global(.depth-expand-btn.up) {
+    top: -11px;
+  }
+  .tree-view :global(.depth-expand-btn.down) {
+    bottom: -11px;
   }
   .tree-view :global(.depth-expand-btn:hover) {
     filter: brightness(1.1);

@@ -2,29 +2,29 @@ import { render, screen, fireEvent } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 import DepthPicker from '../../../src/lib/components/DepthPicker.svelte';
 
-const OPTIONS = [1, 2, 3, 5, 10, 'all'];
+const OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'all'];
 
 describe('DepthPicker', () => {
-  it('renders one button per option, with the current value marked active', () => {
+  it('renders a select with every option and the current value selected', () => {
     render(DepthPicker, { props: { label: 'Down', options: OPTIONS, value: 2, onChange: vi.fn() } });
-    expect(screen.getByRole('button', { name: '1' })).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByRole('button', { name: '2' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '3' })).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByRole('button', { name: '5' })).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByRole('button', { name: '10' })).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByRole('button', { name: 'All' })).toHaveAttribute('aria-pressed', 'false');
+    const select = screen.getByRole('combobox', { name: /Down/ });
+    expect(select).toHaveValue('2');
+    expect(screen.getAllByRole('option')).toHaveLength(11);
+    expect(screen.getByRole('option', { name: 'All' })).toBeInTheDocument();
   });
 
-  it('calls onChange with the clicked option', async () => {
+  it('calls onChange with the typed option value', async () => {
     const onChange = vi.fn();
     render(DepthPicker, { props: { label: 'Down', options: OPTIONS, value: 1, onChange } });
-    await fireEvent.click(screen.getByRole('button', { name: 'All' }));
+    const select = screen.getByRole('combobox');
+    await fireEvent.change(select, { target: { value: 'all' } });
     expect(onChange).toHaveBeenCalledWith('all');
+    await fireEvent.change(select, { target: { value: '7' } });
+    expect(onChange).toHaveBeenCalledWith(7);
   });
 
-  it('uses the label prop for the group and visible label text', () => {
+  it('labels the control with the label prop', () => {
     render(DepthPicker, { props: { label: 'Up', options: OPTIONS, value: 1, onChange: vi.fn() } });
-    expect(screen.getByRole('group', { name: 'Up' })).toBeInTheDocument();
     expect(screen.getByText('Up:')).toBeInTheDocument();
   });
 });
