@@ -3,10 +3,13 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 // BASE_PATH (subfolder hosting, e.g. /tree) comes from the environment or a
 // `.env` file; real environment variables win over the file.
-try {
-  process.loadEnvFile('.env');
-} catch {
-  // no .env file
+// Skipped under vitest, whose tests assume the default (empty) base.
+if (!process.env.VITEST) {
+  try {
+    process.loadEnvFile('.env');
+  } catch {
+    // no .env file
+  }
 }
 
 export default {
