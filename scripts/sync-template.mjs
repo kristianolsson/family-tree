@@ -8,6 +8,7 @@ const THEIRS_PATHS = [
   'docs/ARCHITECTURE.md',
   'docs/schema.md',
   '.claude/skills/add-data/SKILL.md',
+  '.claude/skills/analyze-data/SKILL.md',
   'src/lib/config-template.js'
 ];
 

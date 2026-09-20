@@ -32,7 +32,9 @@ repo's GitHub Pages deployment (Settings → Pages).
   popup naming them. See "Map data" below.
 - **Data tooling** — a `validate_dataset.py` integrity checker, a
   `npm run geocode` place-coordinate resolver, and, for Claude Code users,
-  an `add-data` skill that transcribes sources into the dataset.
+  an `add-data` skill that transcribes sources into the dataset, and an
+  `analyze-data` skill that finds interesting patterns and writes them to
+  `static/data/insights.md`.
 
 ## Develop
 
@@ -89,6 +91,13 @@ places):
 
     python3 scripts/validate_dataset.py --dir static/data
     npm test && npm run build
+
+To see what stands out in your data, run `python3 scripts/analyze_dataset.py`
+(prints statistics as JSON) or, in Claude Code, the `analyze-data` skill
+(`.claude/skills/analyze-data/SKILL.md`), which adds its own reading of the
+records and writes a report to `static/data/insights.md`. `add-data` offers
+to run it after each import. Like everything in `static/data/`, the report
+is served with the site.
 
 ## Map data
 

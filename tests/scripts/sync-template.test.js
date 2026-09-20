@@ -18,6 +18,7 @@ describe('classifyConflict', () => {
     expect(classifyConflict('docs/ARCHITECTURE.md')).toBe('theirs');
     expect(classifyConflict('docs/schema.md')).toBe('theirs');
     expect(classifyConflict('.claude/skills/add-data/SKILL.md')).toBe('theirs');
+    expect(classifyConflict('.claude/skills/analyze-data/SKILL.md')).toBe('theirs');
   });
 
   it('classifies the template-owned config constants file as theirs', () => {

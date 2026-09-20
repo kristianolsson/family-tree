@@ -240,3 +240,10 @@ created vs. merged into existing ones, and anything added to
 `review_queue.json` that needs a decision, and any birth places left
 unresolved by geocoding. Leave the change as an
 uncommitted working-tree edit unless asked to commit it.
+
+## Step 8: Offer the analysis
+
+Once the report-back above is done, ask the owner whether they want the
+`analyze-data` skill run over the updated dataset (it looks for interesting
+patterns and writes `static/data/insights.md`). Don't run it unless they say
+yes.

@@ -37,6 +37,8 @@
 - `sources.json` — one record per photographed document (~ GEDCOM SOUR)
 - `review_queue.json` — open questions, conflicts, low-confidence items
   needing a human's judgment; not currently read by the app itself
+- `insights.md` — optional; generated pattern report written by the
+  `analyze-data` skill (not read by the app, not part of the schema)
 - `places.json` — optional; birth-place coordinates for the ancestor
   heatmap (see below)
 

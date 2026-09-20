@@ -118,6 +118,19 @@ template's fictional sample — empty it (see `docs/schema.md`). The
 missing from `places.json`. The Leaflet rendering is covered by tests and
 the build, not by automated visual checks.
 
+## Insights report
+
+`scripts/analyze_dataset.py` (stdlib only, like `validate_dataset.py`)
+computes deterministic statistics over `static/data/` — counts, coverage,
+lifespans, families, names/occupations, places and movement, and ancestry
+depth from `DEFAULT_PERSON_ID` (or `--root`) — and prints them as JSON.
+The `analyze-data` skill runs it, then reads the records itself for
+qualitative patterns and writes `static/data/insights.md` (overwritten each
+run; section layout and evidence/caveat rules are in the skill). The app
+doesn't read the report yet; being under `static/data/` it's served with
+the site, and is user-owned data like the rest of that directory, so a
+derived repo keeps its own and the template doesn't ship one.
+
 ## Routing
 
 `src/routes/person/[id]/+page.js` loads the dataset, builds the model, and

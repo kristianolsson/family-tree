@@ -55,6 +55,11 @@ below means whatever you've put in `static/data/` in your own copy.
   assignment, review-queue flagging, and (on first use) setting
   `DEFAULT_PERSON_ID` — use the `add-data` skill
   (`.claude/skills/add-data/SKILL.md`).
+- To find patterns worth calling out in the dataset, use the `analyze-data`
+  skill (`.claude/skills/analyze-data/SKILL.md`; `add-data` offers it after
+  each import). It runs `python3 scripts/analyze_dataset.py` and writes
+  `static/data/insights.md` — user-owned data, like the rest of
+  `static/data/`.
 
 ## Syncing with the family-tree template
 
@@ -83,7 +88,8 @@ hand, or want to understand what the script did):
 Conflicts resolve per-path, mechanically:
 
 - Docs and skill files (`README.md`, `CLAUDE.md`, `docs/ARCHITECTURE.md`,
-  `docs/schema.md`, `.claude/skills/add-data/SKILL.md`) and
+  `docs/schema.md`, `.claude/skills/add-data/SKILL.md`,
+  `.claude/skills/analyze-data/SKILL.md`) and
   `src/lib/config-template.js` (template-owned constants — see
   `docs/ARCHITECTURE.md`'s "Two config files") — take **theirs** (the
   template's version wins outright — that's also how future updates to
