@@ -2,15 +2,20 @@ import { base } from '$app/paths';
 
 let cached = null;
 
+// Revalidate with the host on every load (a cheap 304 when unchanged), so an
+// overwritten dataset shows up without a hard refresh even when the host sends
+// no Cache-Control header and the browser would otherwise guess a freshness time.
+const FETCH_OPTIONS = { cache: 'no-cache' };
+
 function fetchJson(fetchImpl, url) {
-  return fetchImpl(url).then((r) => {
+  return fetchImpl(url, FETCH_OPTIONS).then((r) => {
     if (!r.ok) throw new Error(`Failed to load ${url}: ${r.status}`);
     return r.json();
   });
 }
 
 function fetchPlaces(fetchImpl) {
-  return fetchImpl(`${base}/data/places.json`)
+  return fetchImpl(`${base}/data/places.json`, FETCH_OPTIONS)
     .then((r) => (r.ok ? r.json() : {}))
     .then((body) => (body && typeof body === 'object' && !Array.isArray(body) ? body : {}))
     .catch(() => ({}));

@@ -36,6 +36,15 @@ describe('loadDataset', () => {
     expect(fetchMock).toHaveBeenCalledTimes(4);
   });
 
+  it('revalidates every dataset file with the host instead of trusting a cached copy', async () => {
+    const fetchMock = vi.fn(() => jsonResponse([]));
+
+    await loadDataset(fetchMock);
+
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+    for (const call of fetchMock.mock.calls) expect(call[1]).toEqual({ cache: 'no-cache' });
+  });
+
   function withPlaces(placesImpl) {
     return vi.fn((url) => {
       if (url === '/data/places.json') return placesImpl();

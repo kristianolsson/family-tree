@@ -9,6 +9,11 @@ The dataset files (`people.json`, `families.json`, `sources.json`,
 files on the host, with no rebuild of the app. `review_queue.json` is
 copied for future use but not currently read by the app.
 
+The fetches use `cache: 'no-cache'`: the browser keeps its copy but
+revalidates it with the host on each load (a body-less 304 when unchanged),
+so overwriting the dataset on a host that sends no `Cache-Control` header
+shows up without a hard refresh.
+
 `src/lib/data/adapter.js`'s `buildFamilyTreeModel()` turns the raw
 people/families arrays into an adjacency-indexed, renderer-agnostic model:
 `peopleById`, `familiesById`, `sourcesById` (all `Map`s), plus
