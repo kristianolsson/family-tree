@@ -147,7 +147,8 @@ The `build/` output is plain static files — any static host works:
   `person/<id>/index.html` shell for every person, so `/person/<id>` links
   and refreshes work with no rewrite rules (rebuild after adding people).
   If the site lives in a subfolder (e.g. `example.com/tree/`), set
-  `BASE_PATH=/tree` in a `.env` file (or on the command line) before
+  `BASE_PATH=/tree` in a local `.env` file (git-ignored, so other hosts
+  still build at the root) or on the command line before
   `npm run build`, otherwise assets load from the domain root and the page
   is blank.
 - Anywhere else that serves static files (Netlify, S3) — build locally and
