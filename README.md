@@ -142,7 +142,7 @@ The `build/` output is plain static files — any static host works:
   it in your own copy.)
 - **Cloudflare Pages** — connect your repo, build command `npm run build`,
   output directory `build`.
-- **nginx / Apache / plain FTP (e.g. Loopia)** — build locally and upload
+- **nginx / Apache / plain FTP** — build locally and upload
   the contents of `build/`. The build writes `index.html` and a
   `person/<id>/index.html` shell for every person, so `/person/<id>` links
   and refreshes work with no rewrite rules (rebuild after adding people).
