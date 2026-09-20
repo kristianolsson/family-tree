@@ -1,0 +1,7 @@
+# Apache (e.g. Loopia): serve the SPA shell for any path that isn't a real
+# file or directory, so /person/<id> and page refreshes work. Ignored by
+# hosts that don't read .htaccess.
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]

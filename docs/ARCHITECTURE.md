@@ -141,7 +141,10 @@ names. `svelte.config.js` sets `fallback: '404.html'` because person ids
 aren't known at build time, unlike a fully prerenderable site — Cloudflare
 Pages and GitHub Pages both serve a host's `404.html` for any unmatched
 path, letting SvelteKit's client router take over from there (a plain
-`index.html` fallback isn't served automatically by either host).
+`index.html` fallback isn't served automatically by either host). For
+Apache/FTP hosts, `scripts/post-build.mjs` (chained after `vite build`)
+copies `404.html` to `index.html` and `static/.htaccess` rewrites unmatched
+paths to it.
 `src/routes/+layout.js` sets `ssr = false` for the same reason — the whole
 app is a client-side SPA once the shell HTML loads.
 

@@ -5,13 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "vite build && node scripts/post-build.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "setup": "node scripts/setup.mjs",
     "geocode": "node scripts/geocode-places.mjs",
     "sync": "node scripts/sync-template.mjs",
-    "deploy:demo": "BASE_PATH=/family-tree vite build && gh-pages -d build --dotfiles",
+    "deploy:demo": "BASE_PATH=/family-tree vite build && node scripts/post-build.mjs && gh-pages -d build --dotfiles",
     "prepare": "svelte-kit sync || echo ''"
   },
   "dependencies": {

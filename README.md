@@ -142,8 +142,14 @@ The `build/` output is plain static files — any static host works:
   it in your own copy.)
 - **Cloudflare Pages** — connect your repo, build command `npm run build`,
   output directory `build`.
-- Anywhere else that serves static files (Netlify, S3, plain FTP) — build
-  locally and upload `build/`.
+- **Apache / plain FTP (e.g. Loopia)** — build locally and upload the whole
+  of `build/`, including the hidden `.htaccess`. The build writes
+  `index.html` (a copy of the SPA shell) and `static/.htaccess` rewrites
+  unknown paths to it, so `/person/<id>` links and refreshes work. This
+  assumes the site is served from the domain root and the host allows
+  `.htaccess` rewrites.
+- Anywhere else that serves static files (Netlify, S3) — build locally and
+  upload `build/`; the host needs to serve `index.html` for unknown paths.
 
 ## Staying in sync with this template
 
