@@ -79,6 +79,12 @@ def main():
             if sid not in sources_by_id:
                 problems.append(f"{p['id']}: references unknown source {sid}")
 
+    # person.links: each entry needs an http(s) url.
+    for p in people:
+        for link in p.get("links", []):
+            if not str(link.get("url", "")).lower().startswith(("http://", "https://")):
+                problems.append(f"{p['id']}: link has a missing or non-http(s) url")
+
     # Duplicate exact-partner-pair family records (excluding pairs with a null partner).
     seen_pairs = {}
     for fam in families:

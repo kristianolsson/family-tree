@@ -56,6 +56,10 @@ meaningfully increase the deployed site's size, but this follows the same
 runtime-fetch-not-bundled pattern as the JSON data — nothing under
 `static/data/` is ever imported into the JS bundle.
 
+`PersonPanel` also renders a person's optional `links` (`{url, label}`, see
+`docs/schema.md`) as anchors opening in a new tab; anything that isn't an
+`http(s)` URL is skipped, so a bad entry can't produce a `javascript:` link.
+
 `PersonPanel`'s source citations are clickable when their source has a
 `file` (checked per-citation, not assumed) — clicking one opens
 `SourceImageModal.svelte`, a full-page overlay showing `/data/${source.file}`

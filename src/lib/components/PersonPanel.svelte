@@ -45,6 +45,11 @@
       .filter(Boolean)
   );
 
+  // Optional external links; only http(s) URLs are rendered as anchors.
+  let links = $derived(
+    (person.links || []).filter((l) => l && /^https?:\/\//i.test(l.url || ''))
+  );
+
   let sourceCitations = $derived(
     (person.sources || []).map((id) => {
       const source = model.sourcesById.get(id);
@@ -81,6 +86,13 @@
   </dl>
   {#if person.notes}
     <p class="notes">{person.notes}</p>
+  {/if}
+  {#if links.length}
+    <ul class="links">
+      {#each links as link (link.url)}
+        <li><a href={link.url} target="_blank" rel="noopener noreferrer">{link.label || link.url}</a></li>
+      {/each}
+    </ul>
   {/if}
   {#if sourceCitations.length}
     <ul class="sources">
@@ -127,6 +139,19 @@
     color: var(--ink-dim);
     border-top: 1px solid var(--rule);
     padding-top: 0.75rem;
+  }
+  .links {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0.75rem 0 0;
+    border-top: 1px solid var(--rule);
+    font-size: 0.85rem;
+  }
+  .links li {
+    margin-top: 0.25rem;
+  }
+  .links a {
+    color: var(--accent);
   }
   .sources {
     list-style: none;

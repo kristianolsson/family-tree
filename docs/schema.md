@@ -53,10 +53,15 @@
   "occupation": ["Farmer"],
   "notes": "free text, shown to viewers -- life facts only (died in infancy, moved abroad, marriage order); no source citations or editorial commentary",
   "sources": ["S00x", "S00y"],
+  "links": [ {"url": "https://example.com/page", "label": "Short description"} ],
   "conflicts": [],
   "status": "confirmed | tentative"
 }
 ```
+
+`links` is optional: external web pages about the person, shown as clickable
+links (opening in a new tab) in the person panel. Only `http(s)` URLs are
+rendered. Unlike `sources`, a link needs no image in `static/data/images/`.
 
 A person merges across sources primarily by an exact birth-date match,
 comparing names as a **token-subset match** rather than requiring an

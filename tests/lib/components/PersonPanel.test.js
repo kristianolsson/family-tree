@@ -42,6 +42,26 @@ describe('PersonPanel', () => {
     expect(screen.getByText(/disagree on birth year/)).toBeInTheDocument();
   });
 
+  it('renders http(s) links as anchors and ignores other URL schemes', () => {
+    const p1 = model.peopleById.get('P1');
+    render(PersonPanel, {
+      props: {
+        person: {
+          ...p1,
+          links: [
+            { url: 'https://example.com/story', label: 'The story' },
+            { url: 'javascript:alert(1)', label: 'Bad' }
+          ]
+        },
+        model
+      }
+    });
+    const link = screen.getByRole('link', { name: 'The story' });
+    expect(link).toHaveAttribute('href', 'https://example.com/story');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(screen.queryByText('Bad')).not.toBeInTheDocument();
+  });
+
   it('lists each source id with its description', () => {
     render(PersonPanel, {
       props: { person: model.peopleById.get('P5'), model }
