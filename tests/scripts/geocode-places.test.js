@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it, vi } from 'vitest';
-import { collectBirthPlaces, nominatimLookup, geocodePlaces } from '../../scripts/geocode-places.mjs';
+import { collectBirthPlaces, nominatimLookup, countryFirstLookup, geocodePlaces } from '../../scripts/geocode-places.mjs';
 
 const p = (place) => ({ birth: { place } });
 
@@ -25,6 +25,32 @@ describe('nominatimLookup', () => {
   it('throws on a non-ok response', async () => {
     const fetchImpl = async () => ({ ok: false, status: 503 });
     await expect(nominatimLookup('X', fetchImpl)).rejects.toThrow('503');
+  });
+});
+
+describe('countryFirstLookup', () => {
+  const sleep = async () => {};
+  const hit = { ok: true, json: async () => [{ lat: '1', lon: '2' }] };
+  const miss = { ok: true, json: async () => [] };
+
+  it('searches worldwide only when no country is configured', async () => {
+    const fetchImpl = vi.fn(async () => hit);
+    expect(await countryFirstLookup('X', null, { fetchImpl, sleep })).toEqual({ lat: 1, lng: 2 });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(fetchImpl.mock.calls[0][0]).not.toContain('countrycodes');
+  });
+  it('uses the country-restricted result when there is one', async () => {
+    const fetchImpl = vi.fn(async () => hit);
+    expect(await countryFirstLookup('X', 'se', { fetchImpl, sleep })).toEqual({ lat: 1, lng: 2 });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(fetchImpl.mock.calls[0][0]).toContain('countrycodes=se');
+  });
+  it('falls back to a worldwide search, pausing between requests', async () => {
+    const fetchImpl = vi.fn(async (url) => (url.includes('countrycodes') ? miss : hit));
+    const pause = vi.fn(async () => {});
+    expect(await countryFirstLookup('X', 'se', { fetchImpl, sleep: pause })).toEqual({ lat: 1, lng: 2 });
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(pause).toHaveBeenCalledTimes(1);
   });
 });
 

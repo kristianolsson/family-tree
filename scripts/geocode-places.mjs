@@ -15,8 +15,9 @@ export function collectBirthPlaces(people) {
   return [...seen];
 }
 
-export async function nominatimLookup(place, fetchImpl = fetch) {
-  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(place)}&format=json&limit=1`;
+export async function nominatimLookup(place, fetchImpl = fetch, countryCodes = null) {
+  let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(place)}&format=json&limit=1`;
+  if (countryCodes) url += `&countrycodes=${encodeURIComponent(countryCodes)}`;
   const response = await fetchImpl(url, { headers: { 'User-Agent': USER_AGENT } });
   if (!response.ok) throw new Error(`Nominatim returned ${response.status} for "${place}"`);
   const results = await response.json();
@@ -25,6 +26,17 @@ export async function nominatimLookup(place, fetchImpl = fetch) {
 }
 
 const defaultSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// With countryCodes set, search those countries first and fall back to a
+// worldwide search, so a bare "Husum" lands in the configured country rather
+// than wherever Nominatim ranks highest, but "Honolulu, Hawaii, USA" still resolves.
+export async function countryFirstLookup(place, countryCodes, { fetchImpl = fetch, sleep = defaultSleep } = {}) {
+  if (!countryCodes) return nominatimLookup(place, fetchImpl);
+  const local = await nominatimLookup(place, fetchImpl, countryCodes);
+  if (local) return local;
+  await sleep(DELAY_MS);
+  return nominatimLookup(place, fetchImpl);
+}
 
 export async function geocodePlaces({ people, places, lookup, retry = false, sleep = defaultSleep }) {
   const result = { ...places };
@@ -64,7 +76,9 @@ async function main() {
   const people = JSON.parse(readFileSync(join(dataDir, 'people.json'), 'utf8'));
   const placesPath = join(dataDir, 'places.json');
   const places = existsSync(placesPath) ? JSON.parse(readFileSync(placesPath, 'utf8')) : {};
-  const result = await geocodePlaces({ people, places, lookup: (p) => nominatimLookup(p), retry });
+  const config = await import(pathToFileURL(join(REPO_ROOT, 'src', 'lib', 'config.js')).href);
+  const countryCodes = config.GEOCODE_COUNTRY_CODES || null;
+  const result = await geocodePlaces({ people, places, lookup: (p) => countryFirstLookup(p, countryCodes), retry });
   writeFileSync(placesPath, JSON.stringify(result.places, null, 2) + '\n');
   console.log(`places.json: ${Object.keys(result.places).length} places.`);
   if (result.unresolved.length) {

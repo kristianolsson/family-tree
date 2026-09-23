@@ -45,7 +45,9 @@ template can freely add or change its own constants, while your
 template-wide constants belong in `config-template.js`; anything
 genuinely per-installation belongs in `config.js`. `config.js` may also
 optionally export `DEFAULT_PROGENY_DEPTH` / `DEFAULT_ANCESTRY_DEPTH` to
-override the template's defaults.
+override the template's defaults, and `GEOCODE_COUNTRY_CODES` (read only
+by `scripts/geocode-places.mjs`, never by the app) to search those
+countries before worldwide when geocoding.
 
 ## Source images
 
@@ -105,6 +107,10 @@ count and popups say "people" instead of "ancestors". Switching remounts
   place (`max` = the largest group count). Each place also gets a circle
   whose radius grows with its ancestor count (`markerRadius()`).
 - `scripts/geocode-places.mjs` (`npm run geocode`) — fills `places.json`.
+  With `GEOCODE_COUNTRY_CODES` set in `config.js`, each lookup tries
+  Nominatim's `countrycodes` filter first and falls back to worldwide
+  (`countryFirstLookup()`), since bare parish names often match
+  same-named places abroad.
 
 Data flow: `static/data/places.json` -> `loadDataset.js` (fetched at runtime
 like the other data files; a missing file yields an empty map and the

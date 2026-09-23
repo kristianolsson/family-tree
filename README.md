@@ -115,6 +115,13 @@ any it couldn't resolve — set those by hand in `places.json` (`lat`, `lng`,
 `"status": "manual"`), or retry with `npm run geocode -- --retry`. Places
 that resolve to the same point are merged into one circle on the map.
 
+If most of your places are in one country, export
+`GEOCODE_COUNTRY_CODES` (ISO 3166-1 alpha-2 codes, comma-separated, e.g.
+`'se'`) from `src/lib/config.js`. Each new place is then searched in those
+countries first and only worldwide if nothing matches, so a bare "Husum"
+doesn't land in Germany. Places already in `places.json` aren't
+re-looked-up — delete an entry to redo it.
+
 Without `places.json` the app works normally; the overlay just shows a hint.
 Map tiles and data are (c) OpenStreetMap contributors. The template ships
 a small fictional sample `places.json`; if you blank the dataset with
@@ -124,7 +131,8 @@ a small fictional sample `places.json`; if you blank the dataset with
 
 `src/lib/config.js` holds `DEFAULT_PERSON_ID` (who `/` shows) and is yours.
 You can also export `DEFAULT_PROGENY_DEPTH` / `DEFAULT_ANCESTRY_DEPTH`
-there to change the default levels down/up. Every other tunable constant
+there to change the default levels down/up. `GEOCODE_COUNTRY_CODES` (optional)
+biases `npm run geocode` toward your country — see "Map data". Every other tunable constant
 lives in `src/lib/config-template.js`, which is template-owned (see
 `docs/ARCHITECTURE.md`, "Two config files").
 
