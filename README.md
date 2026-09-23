@@ -29,7 +29,8 @@ repo's GitHub Pages deployment (Settings → Pages).
   control) opens a heatmap of where the selected person's ancestors were
   born, using their whole ancestry regardless of the levels limit. Each
   place gets a circle sized by how many ancestors were born there, with a
-  popup naming them. See "Map data" below.
+  popup naming them. An Ancestors / Everyone toggle in the map header
+  switches to a heatmap of everyone in the tree. See "Map data" below.
 - **Data tooling** — a `validate_dataset.py` integrity checker, a
   `npm run geocode` place-coordinate resolver, and, for Claude Code users,
   an `add-data` skill that transcribes sources into the dataset, and an

@@ -88,14 +88,18 @@ ancestors only — not the selected person. The header shows "N of M
 ancestors placed" so people with no recorded or unresolved birth place are
 visible as a gap; with no known ancestors, or none with coordinates, it
 shows a short message instead of the map.
+An Ancestors / Everyone toggle in the header switches the scope to every
+person in the tree (the selected person included); the title, "placed"
+count and popups say "people" instead of "ancestors". Switching remounts
+`MapView` (via `{#key}`), since it builds its layers once on mount.
 
 - `src/lib/data/ancestorMap.js` — pure functions: `collectAncestors()`
   walks the model's `childFamilyOf` links, and `buildHeatData()` groups
   those ancestors' birth places into weighted points using `places`.
   Places pinned at identical coordinates merge into one point (the popup
   lists the places it covers).
-- `src/lib/components/MapOverlay.svelte` — the overlay shell (title, close,
-  empty-state hint when there are no coordinates).
+- `src/lib/components/MapOverlay.svelte` — the overlay shell (title, scope
+  toggle, close, empty-state hint when there are no coordinates).
 - `src/lib/components/MapView.svelte` — the Leaflet map and `leaflet.heat`
   layer, with OpenStreetMap tiles. Heat intensity is scaled to the busiest
   place (`max` = the largest group count). Each place also gets a circle

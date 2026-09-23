@@ -3,7 +3,7 @@
   import { markerRadius } from '$lib/data/ancestorMap.js';
   import 'leaflet/dist/leaflet.css';
 
-  let { groups } = $props();
+  let { groups, noun = 'ancestors' } = $props();
 
   let container;
 
@@ -32,7 +32,7 @@
 
       // Biggest first so small circles stay clickable on top of large ones.
       for (const g of [...groups].sort((a, b) => b.count - a.count)) {
-        const plural = (n) => `${n} ancestor${n === 1 ? '' : 's'}`;
+        const plural = (n) => (n === 1 ? `1 ${noun === 'people' ? 'person' : 'ancestor'}` : `${n} ${noun}`);
         // Text nodes only, so place names are never parsed as HTML.
         const popup = document.createElement('div');
         if (g.places.length === 1) {
