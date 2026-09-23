@@ -1,22 +1,6 @@
 {
-  "Stockholm, Sweden": {
-    "lat": 59.33,
-    "lng": 18.07,
-    "status": "manual"
-  },
-  "Uppsala, Sweden": {
-    "lat": 59.86,
-    "lng": 17.64,
-    "status": "manual"
-  },
-  "Väster, Sweden": {
-    "lat": 59.61,
-    "lng": 16.55,
-    "status": "manual"
-  },
-  "Åby, Sweden": {
-    "lat": 58.67,
-    "lng": 16.19,
-    "status": "manual"
-  }
+  "Stockholm, Sweden": { "lat": 59.33, "lng": 18.07, "status": "manual" },
+  "Uppsala, Sweden": { "lat": 59.86, "lng": 17.64, "status": "manual" },
+  "Väster, Sweden": { "lat": 59.61, "lng": 16.55, "status": "manual" },
+  "Åby, Sweden": { "lat": 58.67, "lng": 16.19, "status": "manual" }
 }
