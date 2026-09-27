@@ -1,0 +1,4 @@
+# Family trees hold personal data -- ask every crawler, search and AI alike,
+# to stay out. Only honoured at the domain root (see README, "Crawlers").
+User-agent: *
+Disallow: /

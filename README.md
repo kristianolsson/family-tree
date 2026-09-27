@@ -163,6 +163,25 @@ The `build/` output is plain static files — any static host works:
 - Anywhere else that serves static files (Netlify, S3) — build locally and
   upload `build/`.
 
+### Crawlers
+
+A family tree is personal data, so the site asks search engines and AI
+crawlers to stay out, in three layers:
+
+- `static/robots.txt` disallows every crawler. Crawlers only read it at the
+  domain root, so if the site lives in a subfolder (`example.com/tree/`),
+  put the same rules in the domain's own root `robots.txt`.
+- `src/app.html` carries a `<meta name="robots" content="noindex, ...">` tag.
+- An `X-Robots-Tag` header covers every file, including the JSON data and
+  images: `static/_headers` sets it on Cloudflare Pages and Netlify, and
+  `static/.htaccess` on Apache hosts. When uploading `build/` by FTP,
+  include the dotfile `.htaccess` (and merge it by hand if the folder
+  already has one).
+
+All three are requests that well-behaved crawlers honour; they don't stop
+a scraper that ignores them. To actually keep the data private, put the
+site behind a login at your host (e.g. Cloudflare Access).
+
 ## Staying in sync with this template
 
     npm run sync
