@@ -1,0 +1,1 @@
+import{X as e}from"./DMnrbeo2.js";e();var t=`P0006`;export{t};
