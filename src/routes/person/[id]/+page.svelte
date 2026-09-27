@@ -11,6 +11,7 @@
   import {
     DEFAULT_PROGENY_DEPTH,
     DEFAULT_ANCESTRY_DEPTH,
+    DEFAULT_COLLAPSE_REPEATS,
     DEPTH_OPTIONS
   } from '$lib/config-template.js';
 
@@ -20,6 +21,7 @@
   let person = $derived(data.model.peopleById.get(data.personId));
   let progenyDepth = $state(userConfig.DEFAULT_PROGENY_DEPTH ?? DEFAULT_PROGENY_DEPTH);
   let ancestryDepth = $state(userConfig.DEFAULT_ANCESTRY_DEPTH ?? DEFAULT_ANCESTRY_DEPTH);
+  let collapseRepeats = $state(userConfig.DEFAULT_COLLAPSE_REPEATS ?? DEFAULT_COLLAPSE_REPEATS);
   let panelOpen = $state(true);
   let MapOverlay = $state(null);
   let mapOpen = $state(false);
@@ -101,6 +103,10 @@
         value={progenyDepth}
         onChange={(v) => (progenyDepth = v)}
       />
+      <label class="repeats-toggle" title="Draw a repeated ancestor's branch only once">
+        <input type="checkbox" bind:checked={collapseRepeats} />
+        Collapse repeats
+      </label>
     </div>
   </div>
   <div class="main">
@@ -109,6 +115,7 @@
       centerId={data.personId}
       {progenyDepth}
       {ancestryDepth}
+      {collapseRepeats}
       onSelectPerson={selectPerson}
       onExpandDepth={expandDepth}
     />
@@ -196,6 +203,18 @@
   }
   .map-btn:hover {
     background: var(--surface);
+  }
+  .repeats-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+    cursor: pointer;
+  }
+  .repeats-toggle input {
+    accent-color: var(--accent);
+    cursor: pointer;
   }
   .toolbar {
     display: flex;

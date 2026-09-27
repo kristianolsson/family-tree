@@ -22,6 +22,11 @@ repo's GitHub Pages deployment (Settings → Pages).
   (1–10 or All) cap how many generations are drawn. Defaults are 5 up / 2
   down. Cards at the edge of the visible tree show a "+" badge that
   expands one more level in that direction.
+- **Collapse repeats** — when an ancestor is reached by more than one line
+  (cousins marrying further back), their whole branch is normally drawn
+  once per line. Tick "Collapse repeats" to draw it at one spot only; the
+  other copies show just the card with a toggle that moves the open branch
+  there. Off by default.
 - **Detail panel** with dates, places, occupations, notes, name variants,
   marriages and source citations; citations open the scanned source image.
   It's a sidebar on desktop and docks to the bottom on mobile.
@@ -131,7 +136,8 @@ a small fictional sample `places.json`; if you blank the dataset with
 
 `src/lib/config.js` holds `DEFAULT_PERSON_ID` (who `/` shows) and is yours.
 You can also export `DEFAULT_PROGENY_DEPTH` / `DEFAULT_ANCESTRY_DEPTH`
-there to change the default levels down/up. `GEOCODE_COUNTRY_CODES` (optional)
+there to change the default levels down/up, and `DEFAULT_COLLAPSE_REPEATS`
+(`true`/`false`) to change whether "Collapse repeats" starts ticked. `GEOCODE_COUNTRY_CODES` (optional)
 biases `npm run geocode` toward your country — see "Map data". Every other tunable constant
 lives in `src/lib/config-template.js`, which is template-owned (see
 `docs/ARCHITECTURE.md`, "Two config files").

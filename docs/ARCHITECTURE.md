@@ -34,7 +34,8 @@ different people who happen to share a name.
 `src/lib/config.js` holds only `DEFAULT_PERSON_ID` — the one setting
 that's genuinely yours, never the template's. `src/lib/config-template.js`
 holds every other configurable constant (`DEFAULT_PROGENY_DEPTH`,
-`DEFAULT_ANCESTRY_DEPTH`, `DEPTH_OPTIONS`, and any future ones) and is
+`DEFAULT_ANCESTRY_DEPTH`, `DEFAULT_COLLAPSE_REPEATS`, `DEPTH_OPTIONS`, and
+any future ones) and is
 template-owned: `npm run sync` always takes the template's version of it,
 the same as `README.md`/`CLAUDE.md`/etc. Earlier, all of these constants
 lived in one `config.js`, and syncing had to fall back to keeping your
@@ -44,8 +45,8 @@ template can freely add or change its own constants, while your
 `DEFAULT_PERSON_ID` is never at risk of being overwritten. New
 template-wide constants belong in `config-template.js`; anything
 genuinely per-installation belongs in `config.js`. `config.js` may also
-optionally export `DEFAULT_PROGENY_DEPTH` / `DEFAULT_ANCESTRY_DEPTH` to
-override the template's defaults, and `GEOCODE_COUNTRY_CODES` (read only
+optionally export `DEFAULT_PROGENY_DEPTH` / `DEFAULT_ANCESTRY_DEPTH` /
+`DEFAULT_COLLAPSE_REPEATS` to override the template's defaults, and `GEOCODE_COUNTRY_CODES` (read only
 by `scripts/geocode-places.mjs`, never by the app) to search those
 countries before worldwide when geocoding.
 
@@ -211,6 +212,19 @@ propagation so it doesn't also select that person) calls
 stepping the corresponding depth to the next value in `DEPTH_OPTIONS`.
 `family-chart` has no notion of per-branch depth, so this always expands the
 whole tree one step in that direction, not just the clicked branch.
+
+**Collapse repeats.** `family-chart` lays the tree out as a strict tree, so
+a person reached by several lines (a shared ancestor after cousin
+marriages, or the same descendants when centered on such an ancestor) is
+drawn, with their whole branch, once per line. It can't draw one card with
+several incoming lines. Its built-in `setDuplicateBranchToggle(true)` does
+the next best thing: the branch is drawn at one spot only, and every other
+copy shows just the card plus a toggle that moves the open branch there.
+The person page holds this as a session-only `collapseRepeats` `$state`
+(default `DEFAULT_COLLAPSE_REPEATS`, `false`), bound to a "Collapse repeats"
+checkbox in the toolbar and passed to `TreeView`'s `collapseRepeats` prop,
+which calls `setDuplicateBranchToggle` before each `updateTree`. It trims
+ancestor repeats almost completely but only some descendant repeats.
 
 `TreeView.svelte` also makes edges hoverable and selectable so a long line
 can be followed. `family-chart` draws each edge as a 1px `path.link` and

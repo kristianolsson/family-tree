@@ -8,6 +8,7 @@
     centerId,
     progenyDepth = 'all',
     ancestryDepth = 'all',
+    collapseRepeats = false,
     onSelectPerson,
     onExpandDepth
   } = $props();
@@ -158,6 +159,11 @@
     if (!centerId) return;
     chart.setProgenyDepth(progenyDepth === 'all' ? undefined : progenyDepth);
     chart.setAncestryDepth(ancestryDepth === 'all' ? undefined : ancestryDepth);
+    // A person reached by several lines (a shared ancestor, or their
+    // descendants when centered on them) is otherwise drawn in full at every
+    // spot. With this on, family-chart draws the branch at one spot only and
+    // puts a toggle on the other copies to move it there.
+    chart.setDuplicateBranchToggle(collapseRepeats);
     chart.updateMainId(centerId);
     chart.updateTree({ initial: !hasRendered });
     hasRendered = true;
