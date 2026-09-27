@@ -1,0 +1,4 @@
+# Cloudflare Pages / Netlify: keep every file (pages, JSON data, images)
+# out of search and AI indexes. See README, "Crawlers".
+/*
+  X-Robots-Tag: noindex, nofollow, noarchive, noai, noimageai
