@@ -1,1 +1,1 @@
-<script>let { groups } = $props();</script><div data-testid="stub-map">{groups.length}</div>
+<script>let { groups, onSelectPerson } = $props();</script><div data-testid="stub-map">{groups.length}</div><button type="button" data-testid="stub-select" onclick={() => onSelectPerson?.(groups[0]?.people[0]?.id)}>select</button>

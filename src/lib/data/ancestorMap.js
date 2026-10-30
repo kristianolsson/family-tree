@@ -1,3 +1,5 @@
+import { primaryName } from './formatDate.js';
+
 export function collectAncestors(model, personId) {
   const seen = new Set();
   const stack = [personId];
@@ -23,9 +25,10 @@ export function buildHeatData(model, ancestorIds, places = {}) {
     // Places pinned at identical coordinates (e.g. several villages resolved to
     // their parish) merge into one group so their circles don't pile up.
     const key = `${coords.lat},${coords.lng}`;
-    const group = groups.get(key) || { lat: coords.lat, lng: coords.lng, count: 0, places: new Map() };
+    const group = groups.get(key) || { lat: coords.lat, lng: coords.lng, count: 0, places: new Map(), people: [] };
     group.count += 1;
     group.places.set(place, (group.places.get(place) || 0) + 1);
+    group.people.push(personEntry(model.peopleById.get(id), place));
     groups.set(key, group);
   }
   return {
@@ -35,9 +38,26 @@ export function buildHeatData(model, ancestorIds, places = {}) {
       lat: g.lat,
       lng: g.lng,
       count: g.count,
-      places: [...g.places].map(([place, count]) => ({ place, count })).sort((a, b) => b.count - a.count)
+      places: [...g.places].map(([place, count]) => ({ place, count })).sort((a, b) => b.count - a.count),
+      people: g.people.sort(byBirthYearThenName)
     }))
   };
+}
+
+function personEntry(person, place) {
+  const birth = person.birth || {};
+  const year = birth.date ? birth.date.slice(0, 4) : birth.year ? String(birth.year) : null;
+  return { id: person.id, name: primaryName(person), year, place };
+}
+
+// Oldest first; people with no birth year go last.
+function byBirthYearThenName(a, b) {
+  if (a.year !== b.year) {
+    if (a.year == null) return 1;
+    if (b.year == null) return -1;
+    return Number(a.year) - Number(b.year);
+  }
+  return a.name.localeCompare(b.name);
 }
 
 export function markerRadius(count) {

@@ -172,6 +172,10 @@
       personId={data.personId}
       places={data.places}
       onClose={() => (mapOpen = false)}
+      onSelectPerson={(id) => {
+        mapOpen = false;
+        selectPerson(id);
+      }}
     />
   {/if}
 </div>

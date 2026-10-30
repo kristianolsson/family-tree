@@ -2,7 +2,7 @@
   import MapView from './MapView.svelte';
   import { collectAncestors, buildHeatData } from '$lib/data/ancestorMap.js';
 
-  let { model, personId, places, onClose } = $props();
+  let { model, personId, places, onClose, onSelectPerson } = $props();
 
   // 'ancestors' = the selected person's ancestry; 'everyone' = every person in the tree.
   let scope = $state('ancestors');
@@ -37,7 +37,7 @@
     {:else}
       <!-- MapView builds its layers once on mount, so remount it when the scope changes. -->
       {#key scope}
-        <MapView groups={heat.groups} {noun} />
+        <MapView groups={heat.groups} {noun} {onSelectPerson} />
       {/key}
     {/if}
   </div>

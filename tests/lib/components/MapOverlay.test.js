@@ -37,6 +37,12 @@ describe('MapOverlay', () => {
     expect(screen.getByText(/npm run geocode/)).toBeInTheDocument();
     expect(screen.queryByTestId('stub-map')).not.toBeInTheDocument();
   });
+  it('passes person selection from the map through to onSelectPerson', async () => {
+    const onSelectPerson = vi.fn();
+    render(MapOverlay, { props: { model, personId: 'C', places, onClose: vi.fn(), onSelectPerson } });
+    await fireEvent.click(screen.getByTestId('stub-select'));
+    expect(onSelectPerson).toHaveBeenCalledWith('A');
+  });
   it('says so when the person has no known ancestors', () => {
     render(MapOverlay, { props: { model, personId: 'A', places, onClose: vi.fn() } });
     expect(screen.getByText(/no known ancestors/i)).toBeInTheDocument();

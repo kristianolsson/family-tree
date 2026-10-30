@@ -56,8 +56,23 @@ describe('buildHeatData', () => {
     expect(r.total).toBe(5);
     expect(r.placed).toBe(3);
     expect(r.groups).toEqual([
-      { lat: 1, lng: 2, count: 2, places: [{ place: 'X, Land', count: 2 }] },
-      { lat: 3, lng: 4, count: 1, places: [{ place: 'Y, Land', count: 1 }] }
+      {
+        lat: 1,
+        lng: 2,
+        count: 2,
+        places: [{ place: 'X, Land', count: 2 }],
+        people: [
+          { id: 'A', name: 'A', year: null, place: 'X, Land' },
+          { id: 'B', name: 'B', year: null, place: 'X, Land' }
+        ]
+      },
+      {
+        lat: 3,
+        lng: 4,
+        count: 1,
+        places: [{ place: 'Y, Land', count: 1 }],
+        people: [{ id: 'C', name: 'C', year: null, place: 'Y, Land' }]
+      }
     ]);
   });
 
@@ -70,7 +85,7 @@ describe('buildHeatData', () => {
       P3: { lat: 7, lng: 8, status: 'auto' }
     });
     expect(r.placed).toBe(4);
-    expect(r.groups).toEqual([
+    expect(r.groups.map(({ people, ...g }) => g)).toEqual([
       {
         lat: 5,
         lng: 6,
@@ -82,11 +97,33 @@ describe('buildHeatData', () => {
       },
       { lat: 7, lng: 8, count: 1, places: [{ place: 'P3', count: 1 }] }
     ]);
+    expect(r.groups[0].people.map((p) => p.id)).toEqual(['A', 'B', 'C']);
   });
 
   it('trims place strings before lookup (matches the geocode script keys)', () => {
     const r = buildHeatData(model([person('A', ' X, Land ')], []), ['A'], places);
     expect(r.placed).toBe(1);
+  });
+
+  it('lists each group\'s people oldest first, undated last, with name, year and place', () => {
+    const born = (id, name, birth) => ({
+      id,
+      names: [{ value: name, type: 'birth', source_id: null }],
+      birth: { place: 'X, Land', source_id: null, date: null, year: null, ...birth }
+    });
+    const ppl = [
+      born('A', 'Undated', {}),
+      born('B', 'Bertil', { year: '1850' }),
+      born('C', 'Anna', { date: '1850-03-01' }),
+      born('D', 'Olof', { year: 1700 })
+    ];
+    const r = buildHeatData(model(ppl, []), ['A', 'B', 'C', 'D'], places);
+    expect(r.groups[0].people).toEqual([
+      { id: 'D', name: 'Olof', year: '1700', place: 'X, Land' },
+      { id: 'C', name: 'Anna', year: '1850', place: 'X, Land' },
+      { id: 'B', name: 'Bertil', year: '1850', place: 'X, Land' },
+      { id: 'A', name: 'Undated', year: null, place: 'X, Land' }
+    ]);
   });
 
   it('handles an empty places map', () => {

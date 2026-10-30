@@ -1,9 +1,11 @@
 <script>
   import { onMount } from 'svelte';
+  import { base } from '$app/paths';
   import { markerRadius } from '$lib/data/ancestorMap.js';
+  import { buildPopupContent } from './mapPopup.js';
   import 'leaflet/dist/leaflet.css';
 
-  let { groups, noun = 'ancestors' } = $props();
+  let { groups, noun = 'ancestors', onSelectPerson } = $props();
 
   let container;
 
@@ -32,31 +34,19 @@
 
       // Biggest first so small circles stay clickable on top of large ones.
       for (const g of [...groups].sort((a, b) => b.count - a.count)) {
-        const plural = (n) => (n === 1 ? `1 ${noun === 'people' ? 'person' : 'ancestor'}` : `${n} ${noun}`);
-        // Text nodes only, so place names are never parsed as HTML.
-        const popup = document.createElement('div');
-        if (g.places.length === 1) {
-          popup.textContent = `${g.places[0].place} — ${plural(g.count)}`;
-        } else {
-          const title = document.createElement('strong');
-          title.textContent = plural(g.count);
-          const list = document.createElement('ul');
-          list.style.margin = '0.25rem 0 0';
-          list.style.paddingLeft = '1.1rem';
-          for (const { place, count } of g.places) {
-            const item = document.createElement('li');
-            item.textContent = `${place} (${count})`;
-            list.append(item);
-          }
-          popup.append(title, list);
-        }
-        L.circleMarker([g.lat, g.lng], {
+        const marker = L.circleMarker([g.lat, g.lng], {
           radius: markerRadius(g.count),
           weight: 1,
           fillOpacity: 0.35
-        })
-          .addTo(map)
-          .bindPopup(popup);
+        }).addTo(map);
+        const popup = buildPopupContent(g, {
+          noun,
+          personHref: (id) => `${base}/person/${id}`,
+          onSelectPerson,
+          // Re-measure after the person list opens or closes.
+          onResize: () => marker.getPopup()?.update()
+        });
+        marker.bindPopup(popup, { maxWidth: 320 });
       }
 
       if (groups.length > 0) {
@@ -82,5 +72,24 @@
   .map {
     position: absolute;
     inset: 0;
+  }
+  /* Popup content is built outside Svelte (mapPopup.js), so these are global. */
+  .map :global(.map-popup-toggle) {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #0078a8;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .map :global(.map-popup-places),
+  .map :global(.map-popup-people) {
+    margin: 0.25rem 0 0;
+    padding-left: 1.1rem;
+  }
+  .map :global(.map-popup-people) {
+    max-height: 14rem;
+    overflow-y: auto;
   }
 </style>
