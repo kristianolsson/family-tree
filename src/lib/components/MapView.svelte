@@ -53,7 +53,10 @@
             // Re-measure after the person list opens or closes.
             onResize: () => marker.getPopup()?.update()
           });
-          marker.bindPopup(popup, { maxWidth: 320 });
+          // Long place/people lists scroll inside the popup instead of
+          // running off the map.
+          const maxHeight = Math.max(160, Math.round(container.clientHeight * 0.6));
+          marker.bindPopup(popup, { maxWidth: 320, maxHeight });
         }
       };
       map.on('zoomend', drawMarkers);
@@ -97,9 +100,5 @@
   .map :global(.map-popup-people) {
     margin: 0.25rem 0 0;
     padding-left: 1.1rem;
-  }
-  .map :global(.map-popup-people) {
-    max-height: 14rem;
-    overflow-y: auto;
   }
 </style>

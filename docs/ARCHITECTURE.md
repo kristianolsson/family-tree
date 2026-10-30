@@ -116,13 +116,15 @@ count and popups say "people" instead of "ancestors". Switching remounts
 - `src/lib/components/mapPopup.js` — builds each circle's popup as plain
   DOM (text nodes only, no HTML parsing). It doesn't import the map
   library, so it's unit-testable and outside the map seam. The "N
-  ancestors" count is a button that expands a scrollable list of the
+  ancestors" count is a button that expands a list of the
   people at that point (oldest first, undated last; each with birth year,
   plus the place when the point merges several). `buildHeatData()`
   supplies that list as each group's `people`. Each name is a real link
   to `/person/<id>` (so cmd/ctrl-click opens a new tab); a plain click
   calls `onSelectPerson`, which the person page wires to close the map
-  and navigate.
+  and navigate. The whole popup is capped at 60% of the map's height
+  (Leaflet's `maxHeight`) and scrolls, so long merged place and people
+  lists stay on screen.
 - `scripts/geocode-places.mjs` (`npm run geocode`) — fills `places.json`.
   With `GEOCODE_COUNTRY_CODES` set in `config.js`, each lookup tries
   Nominatim's `countrycodes` filter first and falls back to worldwide
