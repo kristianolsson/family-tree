@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { base } from '$app/paths';
-  import { markerRadius } from '$lib/data/ancestorMap.js';
+  import { markerRadius, clusterGroups } from '$lib/data/ancestorMap.js';
   import { buildPopupContent } from './mapPopup.js';
   import 'leaflet/dist/leaflet.css';
 
@@ -32,22 +32,31 @@
         { radius: 25, blur: 20, max: Math.max(1, ...groups.map((g) => g.count)) }
       ).addTo(map);
 
-      // Biggest first so small circles stay clickable on top of large ones.
-      for (const g of [...groups].sort((a, b) => b.count - a.count)) {
-        const marker = L.circleMarker([g.lat, g.lng], {
-          radius: markerRadius(g.count),
-          weight: 1,
-          fillOpacity: 0.35
-        }).addTo(map);
-        const popup = buildPopupContent(g, {
-          noun,
-          personHref: (id) => `${base}/person/${id}`,
-          onSelectPerson,
-          // Re-measure after the person list opens or closes.
-          onResize: () => marker.getPopup()?.update()
-        });
-        marker.bindPopup(popup, { maxWidth: 320 });
-      }
+      // Circles are rebuilt on every zoom: groups that would overlap on
+      // screen at this zoom merge into one, and split again as you zoom in.
+      const markers = L.layerGroup().addTo(map);
+      const drawMarkers = () => {
+        markers.clearLayers();
+        const zoom = map.getZoom();
+        const clusters = clusterGroups(groups, (lat, lng) => map.project([lat, lng], zoom));
+        // Biggest first so small circles stay clickable on top of large ones.
+        for (const g of clusters.sort((a, b) => b.count - a.count)) {
+          const marker = L.circleMarker([g.lat, g.lng], {
+            radius: markerRadius(g.count),
+            weight: 1,
+            fillOpacity: 0.35
+          }).addTo(markers);
+          const popup = buildPopupContent(g, {
+            noun,
+            personHref: (id) => `${base}/person/${id}`,
+            onSelectPerson,
+            // Re-measure after the person list opens or closes.
+            onResize: () => marker.getPopup()?.update()
+          });
+          marker.bindPopup(popup, { maxWidth: 320 });
+        }
+      };
+      map.on('zoomend', drawMarkers);
 
       if (groups.length > 0) {
         map.fitBounds(
@@ -57,6 +66,7 @@
       } else {
         map.setView([20, 0], 2);
       }
+      drawMarkers();
     })();
 
     return () => {

@@ -106,7 +106,13 @@ count and popups say "people" instead of "ancestors". Switching remounts
 - `src/lib/components/MapView.svelte` — the Leaflet map and `leaflet.heat`
   layer, with OpenStreetMap tiles. Heat intensity is scaled to the busiest
   place (`max` = the largest group count). Each place also gets a circle
-  whose radius grows with its ancestor count (`markerRadius()`).
+  whose radius grows with its ancestor count (`markerRadius()`, capped at
+  30 px). Circles are rebuilt on every zoom by `clusterGroups()`: groups
+  whose centres are within `MERGE_DISTANCE_PX` (24) on screen merge into
+  one circle (combined count, places and people), and split again as you
+  zoom in. Merging is greedy and anchored on the busiest group's centre,
+  not chained member to member, so zooming out gives one capped circle per
+  area rather than one giant blob; the heat layer is unaffected.
 - `src/lib/components/mapPopup.js` — builds each circle's popup as plain
   DOM (text nodes only, no HTML parsing). It doesn't import the map
   library, so it's unit-testable and outside the map seam. The "N

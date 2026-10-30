@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildFamilyTreeModel } from '../../../src/lib/data/adapter.js';
-import { collectAncestors, buildHeatData, markerRadius } from '../../../src/lib/data/ancestorMap.js';
+import { collectAncestors, buildHeatData, markerRadius, clusterGroups } from '../../../src/lib/data/ancestorMap.js';
 
 const person = (id, place) => ({
   id,
@@ -140,5 +140,55 @@ describe('markerRadius', () => {
   });
   it('is capped', () => {
     expect(markerRadius(10000)).toBe(30);
+  });
+});
+
+describe('clusterGroups', () => {
+  // Identity projection: treat lat/lng as screen pixels.
+  const project = (lat, lng) => ({ x: lng, y: lat });
+  const g = (lat, lng, place, ids) => ({
+    lat,
+    lng,
+    count: ids.length,
+    places: [{ place, count: ids.length }],
+    people: ids.map(([id, year]) => ({ id, name: id, year, place }))
+  });
+
+  it('merges groups within the distance into the busiest one, combining places and people', () => {
+    const big = g(0, 0, 'Parish', [['A', '1700'], ['B', '1800']]);
+    const near = g(0, 10, 'Village', [['C', '1750']]);
+    const far = g(0, 100, 'Elsewhere', [['D', null]]);
+    const r = clusterGroups([near, far, big], project, 24);
+    expect(r).toHaveLength(2);
+    expect(r[0]).toEqual({
+      lat: 0,
+      lng: 0,
+      count: 3,
+      places: [
+        { place: 'Parish', count: 2 },
+        { place: 'Village', count: 1 }
+      ],
+      people: [
+        { id: 'A', name: 'A', year: '1700', place: 'Parish' },
+        { id: 'C', name: 'C', year: '1750', place: 'Village' },
+        { id: 'B', name: 'B', year: '1800', place: 'Parish' }
+      ]
+    });
+    expect(r[1]).toBe(far);
+  });
+
+  it('does not chain: a group near a member but far from the anchor stays separate', () => {
+    const anchor = g(0, 0, 'A', [['A', null], ['A2', null]]);
+    const middle = g(0, 20, 'B', [['B', null]]);
+    const end = g(0, 40, 'C', [['C', null]]);
+    const r = clusterGroups([anchor, middle, end], project, 24);
+    expect(r.map((c) => c.count)).toEqual([2 + 1, 1]);
+    expect(r[1]).toBe(end);
+  });
+
+  it('leaves groups alone when nothing is close', () => {
+    const a = g(0, 0, 'A', [['A', null]]);
+    const b = g(0, 50, 'B', [['B', null]]);
+    expect(clusterGroups([a, b], project, 24)).toEqual([a, b]);
   });
 });
