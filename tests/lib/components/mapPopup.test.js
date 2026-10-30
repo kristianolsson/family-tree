@@ -82,7 +82,9 @@ describe('buildPopupContent', () => {
     expect(more.textContent).toBe('+3 more places');
     more.click();
     expect(items()).toHaveLength(PLACES_SHOWN + 3);
-    expect(el.querySelector('.map-popup-more')).toBeNull();
+    // Still attached (so the map doesn't treat the click as outside the popup), just hidden.
+    expect(el.contains(more)).toBe(true);
+    expect(more.hidden).toBe(true);
     expect(onResize).toHaveBeenCalledTimes(1);
   });
 

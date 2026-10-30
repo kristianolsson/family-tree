@@ -47,7 +47,10 @@ export function buildPopupContent(group, { noun = 'ancestors', personHref, onSel
       more.textContent = `+${hidden.length} more places`;
       more.addEventListener('click', () => {
         for (const item of hidden) item.hidden = false;
-        more.remove();
+        // Hide rather than remove: Leaflet walks up from the click target to
+        // tell popup clicks from map clicks, and a detached button reads as a
+        // map click, which closes the popup.
+        more.hidden = true;
         onResize?.();
       });
       popup.append(more);

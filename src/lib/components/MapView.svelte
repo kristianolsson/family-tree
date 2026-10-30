@@ -96,6 +96,12 @@
     text-decoration: underline;
     cursor: pointer;
   }
+  /* A thin, light scrollbar that sits on the white popup instead of the
+     browser's default dark track. */
+  .map :global(.leaflet-popup-content) {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.22) transparent;
+  }
   .map :global(.map-popup-more) {
     margin: 0.15rem 0 0 1.1rem;
     font-size: 0.9em;
