@@ -1,0 +1,1 @@
+function e(e){return e?e.date?e.date:e.year?e.year:``:``}function t(e){return e?e.date?e.date.slice(0,4):e.year?String(e.year):`unknown`:`unknown`}function n(e){return(e.names.find(e=>e.type===`birth`)||e.names[0])?.value||`Unknown`}export{e as n,n as r,t};
