@@ -118,7 +118,9 @@ count and popups say "people" instead of "ancestors". Switching remounts
   library, so it's unit-testable and outside the map seam. The "N
   ancestors" count is a button that expands a list of the
   people at that point (oldest first, undated last; each with birth year,
-  plus the place when the point merges several). `buildHeatData()`
+  plus the place when the point merges several). A merged point lists
+  only its 10 busiest places (`PLACES_SHOWN`) with a "+N more places"
+  button, so the people list isn't buried. `buildHeatData()`
   supplies that list as each group's `people`. Each name is a real link
   to `/person/<id>` (so cmd/ctrl-click opens a new tab); a plain click
   calls `onSelectPerson`, which the person page wires to close the map

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { buildPopupContent } from '../../../src/lib/components/mapPopup.js';
+import { buildPopupContent, PLACES_SHOWN } from '../../../src/lib/components/mapPopup.js';
 
 const group = (places, people) => ({ lat: 1, lng: 2, count: people.length, places, people });
 const one = group(
@@ -70,6 +70,25 @@ describe('buildPopupContent', () => {
     expect(toggleOf(el).textContent).toBe('2 people');
     expect([...el.querySelectorAll('.map-popup-places li')].map((li) => li.textContent)).toEqual(['P2 (1)', 'P1 (1)']);
     expect([...peopleOf(el).children].map((li) => li.textContent)).toEqual(['Anna (1700, P1)', 'Bo (P2)']);
+  });
+
+  it('shows only the busiest places, with a button to reveal the rest', () => {
+    const places = Array.from({ length: PLACES_SHOWN + 3 }, (_, i) => ({ place: `P${i}`, count: 1 }));
+    const onResize = vi.fn();
+    const el = buildPopupContent(group(places, []), { onResize });
+    const items = () => [...el.querySelectorAll('.map-popup-places li')].filter((li) => !li.hidden);
+    expect(items()).toHaveLength(PLACES_SHOWN);
+    const more = el.querySelector('.map-popup-more');
+    expect(more.textContent).toBe('+3 more places');
+    more.click();
+    expect(items()).toHaveLength(PLACES_SHOWN + 3);
+    expect(el.querySelector('.map-popup-more')).toBeNull();
+    expect(onResize).toHaveBeenCalledTimes(1);
+  });
+
+  it('has no "more" button when the places fit', () => {
+    const places = Array.from({ length: PLACES_SHOWN }, (_, i) => ({ place: `P${i}`, count: 1 }));
+    expect(buildPopupContent(group(places, []), {}).querySelector('.map-popup-more')).toBeNull();
   });
 
   it('uses the singular for one person', () => {

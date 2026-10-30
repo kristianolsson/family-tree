@@ -96,6 +96,10 @@
     text-decoration: underline;
     cursor: pointer;
   }
+  .map :global(.map-popup-more) {
+    margin: 0.15rem 0 0 1.1rem;
+    font-size: 0.9em;
+  }
   .map :global(.map-popup-places),
   .map :global(.map-popup-people) {
     margin: 0.25rem 0 0;

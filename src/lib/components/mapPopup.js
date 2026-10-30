@@ -1,6 +1,9 @@
 // Builds a map marker's popup as a plain DOM node, which MapView binds to
 // the marker. Text nodes only, so names and place names are never parsed as
 // HTML. It doesn't touch the map library, so it can be tested on its own.
+// How many of a merged circle's places to list before a "+N more" button.
+export const PLACES_SHOWN = 10;
+
 export function buildPopupContent(group, { noun = 'ancestors', personHref, onSelectPerson, onResize } = {}) {
   const countLabel = (n) => (n === 1 ? `1 ${noun === 'people' ? 'person' : 'ancestor'}` : `${n} ${noun}`);
 
@@ -24,12 +27,31 @@ export function buildPopupContent(group, { noun = 'ancestors', personHref, onSel
   if (group.places.length > 1) {
     const placeList = document.createElement('ul');
     placeList.className = 'map-popup-places';
-    for (const { place, count } of group.places) {
+    const hidden = [];
+    group.places.forEach(({ place, count }, i) => {
       const item = document.createElement('li');
       item.textContent = `${place} (${count})`;
+      // Big merged circles can cover dozens of places; show the busiest few
+      // so the people list isn't buried under them.
+      if (i >= PLACES_SHOWN) {
+        item.hidden = true;
+        hidden.push(item);
+      }
       placeList.append(item);
-    }
+    });
     popup.append(placeList);
+    if (hidden.length) {
+      const more = document.createElement('button');
+      more.type = 'button';
+      more.className = 'map-popup-toggle map-popup-more';
+      more.textContent = `+${hidden.length} more places`;
+      more.addEventListener('click', () => {
+        for (const item of hidden) item.hidden = false;
+        more.remove();
+        onResize?.();
+      });
+      popup.append(more);
+    }
   }
 
   const people = document.createElement('ol');
