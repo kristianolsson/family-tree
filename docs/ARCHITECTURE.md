@@ -131,7 +131,12 @@ count and popups say "people" instead of "ancestors". Switching remounts
   With `GEOCODE_COUNTRY_CODES` set in `config.js`, each lookup tries
   Nominatim's `countrycodes` filter first and falls back to worldwide
   (`countryFirstLookup()`), since bare parish names often match
-  same-named places abroad.
+  same-named places abroad. Each lookup takes Nominatim's top five
+  results and prefers a settlement (`class: "place"`): a bare parish or
+  municipality name otherwise resolves to its administrative boundary,
+  whose point is the middle of the whole area. With no settlement among
+  them it uses the first result and lists the place as approximate, to
+  be checked and pinned by hand.
 
 Data flow: `static/data/places.json` -> `loadDataset.js` (fetched at runtime
 like the other data files; a missing file yields an empty map and the

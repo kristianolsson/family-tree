@@ -15,14 +15,23 @@ export function collectBirthPlaces(people) {
   return [...seen];
 }
 
+// A bare parish or municipality name usually ranks its administrative
+// boundary first, whose point is the middle of the whole area (often empty
+// forest), with the actual town or village a few results down. So ask for
+// several results and prefer a settlement (class "place"). If none matches,
+// use the first result but flag it approximate so it gets a manual check.
 export async function nominatimLookup(place, fetchImpl = fetch, countryCodes = null) {
-  let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(place)}&format=json&limit=1`;
+  let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(place)}&format=json&limit=5`;
   if (countryCodes) url += `&countrycodes=${encodeURIComponent(countryCodes)}`;
   const response = await fetchImpl(url, { headers: { 'User-Agent': USER_AGENT } });
   if (!response.ok) throw new Error(`Nominatim returned ${response.status} for "${place}"`);
   const results = await response.json();
   if (!results.length) return null;
-  return { lat: Number(results[0].lat), lng: Number(results[0].lon) };
+  const settlement = results.find((r) => r.class === 'place');
+  const best = settlement ?? results[0];
+  const coords = { lat: Number(best.lat), lng: Number(best.lon) };
+  if (!settlement && best.class) coords.approximate = true;
+  return coords;
 }
 
 const defaultSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -41,6 +50,7 @@ export async function countryFirstLookup(place, countryCodes, { fetchImpl = fetc
 export async function geocodePlaces({ people, places, lookup, retry = false, sleep = defaultSleep }) {
   const result = { ...places };
   const unresolved = [];
+  const approximate = [];
   let firstRequest = true;
   for (const place of collectBirthPlaces(people)) {
     const existing = result[place];
@@ -62,12 +72,13 @@ export async function geocodePlaces({ people, places, lookup, retry = false, sle
     }
     if (coords) {
       result[place] = { lat: coords.lat, lng: coords.lng, status: 'auto' };
+      if (coords.approximate) approximate.push(place);
     } else {
       result[place] = { lat: null, lng: null, status: 'unresolved' };
       unresolved.push(place);
     }
   }
-  return { places: result, unresolved };
+  return { places: result, unresolved, approximate };
 }
 
 async function main() {
@@ -84,6 +95,11 @@ async function main() {
   if (result.unresolved.length) {
     console.log('\nCould not resolve these; set lat/lng by hand and status "manual":');
     for (const place of result.unresolved) console.log(`  - ${place}`);
+  }
+  if (result.approximate.length) {
+    console.log('\nNo town or village matched these, so they point at an area centre, road or');
+    console.log('other feature; check them on the map and set lat/lng by hand with status "manual":');
+    for (const place of result.approximate) console.log(`  - ${place}`);
   }
 }
 

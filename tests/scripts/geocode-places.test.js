@@ -22,6 +22,24 @@ describe('nominatimLookup', () => {
     const fetchImpl = async () => ({ ok: true, json: async () => [] });
     expect(await nominatimLookup('Nowhere', fetchImpl)).toBeNull();
   });
+  it('asks for several results and prefers a settlement over an area or road', async () => {
+    const results = [
+      { class: 'boundary', type: 'administrative', lat: '63.66', lon: '19.41' },
+      { class: 'highway', type: 'tertiary', lat: '63.70', lon: '18.97' },
+      { class: 'place', type: 'town', lat: '63.57', lon: '19.50' },
+    ];
+    const fetchImpl = vi.fn(async () => ({ ok: true, json: async () => results }));
+    expect(await nominatimLookup('Nordmaling', fetchImpl)).toEqual({ lat: 63.57, lng: 19.5 });
+    expect(fetchImpl.mock.calls[0][0]).toContain('limit=5');
+  });
+  it('falls back to the first result, flagged approximate, when no settlement matches', async () => {
+    const results = [
+      { class: 'boundary', type: 'administrative', lat: '63.66', lon: '17.81' },
+      { class: 'highway', type: 'tertiary', lat: '63.70', lon: '18.97' },
+    ];
+    const fetchImpl = async () => ({ ok: true, json: async () => results });
+    expect(await nominatimLookup('Anundsjö', fetchImpl)).toEqual({ lat: 63.66, lng: 17.81, approximate: true });
+  });
   it('throws on a non-ok response', async () => {
     const fetchImpl = async () => ({ ok: false, status: 503 });
     await expect(nominatimLookup('X', fetchImpl)).rejects.toThrow('503');
@@ -82,6 +100,13 @@ describe('geocodePlaces', () => {
     const places = { Z: { lat: null, lng: null, status: 'unresolved' } };
     const r = await geocodePlaces({ people: [p('Z')], places, lookup: async () => null, sleep });
     expect(r.unresolved).toEqual(['Z']);
+  });
+  it('caches approximate matches as auto but reports them for a manual check', async () => {
+    const lookup = async (place) => (place === 'A' ? { lat: 1, lng: 2, approximate: true } : { lat: 3, lng: 4 });
+    const r = await geocodePlaces({ people: [p('A'), p('B')], places: {}, lookup, sleep });
+    expect(r.places.A).toEqual({ lat: 1, lng: 2, status: 'auto' });
+    expect(r.approximate).toEqual(['A']);
+    expect(r.unresolved).toEqual([]);
   });
   it('leaves a place uncached on a lookup error, reports it, and keeps going', async () => {
     const lookup = async (place) => {

@@ -200,8 +200,9 @@ npm run build
 
 `npm run geocode` looks up any birth place not yet in `places.json` via
 Nominatim (needs network), skips places already cached or hand-set, and
-prints any it couldn't resolve — fix those by hand in `places.json` (see
-`docs/schema.md`) or report them to the owner. A network error leaves a
+prints any it couldn't resolve, plus any it could only place at an
+area centre, road or other non-settlement feature — fix those by hand in
+`places.json` (see `docs/schema.md`) or report them to the owner. A network error leaves a
 place unrecorded so the next run retries it. With no network, geocoding
 can't run: add each new place to `places.json` as
 `{"lat": null, "lng": null, "status": "unresolved"}` so validation passes,

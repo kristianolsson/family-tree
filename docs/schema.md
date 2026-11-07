@@ -127,7 +127,9 @@ each value holding coordinates and how they were obtained:
   network error is not cached, so the next plain run retries that place.
 
 `npm run geocode` collects the unique, trimmed birth places, skips any
-already cached, and prints the places still unresolved. To fix one by
+already cached, and prints the places still unresolved, plus any it
+resolved only to an area centre, road or other non-settlement feature
+(saved as `auto`, but worth checking on the map). To fix one by
 hand, set its `lat` and `lng` and change `status` to `"manual"`. Keys
 must be the exact trimmed place string. If you can't reach the network
 (so geocoding can't run), add the place as
